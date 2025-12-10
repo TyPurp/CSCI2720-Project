@@ -189,12 +189,13 @@ const seedData = {
   ]
 };
 
-// ONE-TIME SEED ROUTE: reset all database into original
+/ ONE-TIME SEED ROUTE: reset all database(event, venue and user) into original
 app.get('/seed', async (req, res) => {
   try {
     // await mongoose.connection.db.dropDatabase();
     await Venue.deleteMany({});
     await Event.deleteMany({});
+    await User.deleteMany({});
 
     for (const v of seedData.venues) {
       await new Venue(v).save();
@@ -202,10 +203,12 @@ app.get('/seed', async (req, res) => {
         await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
       }
     }
-    /* await User.create([
+
+    await User.create([
       { username: 'user', password: '123456', role: 'user', favourites: [] },
       { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
-    ]);*/ 
+    ]);
+
     res.send('<h1>SEED SUCCESSFUL!</h1><p>10 venues + events + accounts ready<br>Last updated: 2025-12-09</p>');
   } catch (err) {
     res.status(500).send(err.message);
@@ -317,3 +320,4 @@ app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
 });
+
