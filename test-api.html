@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Page - Web App Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .test-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .api-endpoint {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .endpoint-url {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 10px 0;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .test-get {
+            background: #28a745;
+            color: white;
+        }
+        
+        .test-post {
+            background: #007bff;
+            color: white;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .result-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .status-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .login-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .login-btn {
+            background: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #0056b3;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .loading {
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 Web App Backend API Tester</h1>
+            <p>Test your backend APIs without building frontend</p>
+        </div>
+        
+        <!-- Login Section -->
+        <div class="login-section" id="loginSection">
+            <h2>🔐 1. First, Get Authentication Token</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" value="testuser" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" value="password123" placeholder="Enter password">
+            </div>
+            <button class="login-btn" onclick="login()">Login & Get Token</button>
+            <div class="result-box" id="loginResult">
+                <!-- Login result will appear here -->
+            </div>
+        </div>
+        
+        <!-- User Info -->
+        <div class="user-info" id="userInfo" style="display: none;">
+            <h2>👤 Logged In User</h2>
+            <p><strong>Username:</strong> <span id="displayUsername"></span></p>
+            <p><strong>Token:</strong> <span id="tokenPreview"></span></p>
+            <button class="test-btn" onclick="logout()" style="background: #dc3545;">Logout</button>
+        </div>
+        
+        <!-- API Test Sections -->
+        
+        <!-- API Status -->
+        <div class="test-section">
+            <h2>📊 API Status</h2>
+            <div class="api-endpoint">
+                <span class="endpoint-method">GET</span>
+                <strong>Get API Status & Last Updated Time</strong>
+                <div class="endpoint-url">http://localhost:5000/api/status</div>
+                <p>Check if backend is running and get last updated timestamp.</p>
+                <div class="test-buttons">
+                    <button class="test-btn test-get" onclick="testApiStatus()">Test API Status</button>
+                </div>
+                <div class="result-box" id="statusResult">
+                    Click button to test
+                </div>
+            </div>
+        </div>
+        
+        <!-- Locations -->
+        <div class="test-section">
+            <h2>📍 Locations API</h2>
+            
+            <!-- Get All Locations -->
+            <div class="api-endpoint">
+                <span class="endpoint-method">GET</span>
+                <strong>Get All Locations</strong>
+                <div class="endpoint-url">http://localhost:5000/api/locations</div>
+                <p>Get list of all locations with details.</p>
+                <div class="test-buttons">
+                    <button class="test-btn test-get" onclick="testGetLocations()">Get All Locations</button>
+                    <button class="test-btn test-get" onclick="testGetLocationsWithDistance()">Get with Distance</button>
+                </div>
+                <div class="result-box" id="locationsResult">
+                    Click button to test
+                </div>
+            </div>
+            
+            <!-- Search Locations -->
+            <div class="api-endpoint">
+                <span class="endpoint-method">GET</span>
+                <strong>Search & Filter Locations</strong>
+                <div class="endpoint-url">http://localhost:5000/api/locations/search/filter?keyword=&district=&maxDistance=</div>
+                <div class="test-buttons">
+                    <input type="text" id="searchKeyword" placeholder="Keyword" style="padding: 8px;">
+                    <input type="text" id="searchDistrict" placeholder="District" style="padding: 8px;">
+                    <input type="number" id="searchDistance" placeholder="Max km" style="padding: 8px;">
+                    <button class="test-btn test-get" onclick="testSearchLocations()">Search Locations</button>
+                </div>
+                <div class="result-box" id="searchResult">
+                    Enter criteria and click search
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comments -->
+        <div class="test-section">
+            <h2>💬 Comments API</h2>
+            
+            <!-- Get Comments -->
+            <div class="api-endpoint">
+                <span class="endpoint-method">GET</span>
+                <strong>Get Comments for Location</strong>
+                <div class="endpoint-url">http://localhost:5000/api/comments/location/{locationId}</div>
+                <div class="test-buttons">
+                    <input type="text" id="locationIdForComments" placeholder="Enter Location ID" style="flex-grow: 1; padding: 8px;">
+                    <button class="test-btn test-get" onclick="testGetComments()">Get Comments</button>
+                </div>
+                <div class="result-box" id="commentsResult">
+                    Enter location ID first
+                </div>
+            </div>
+            
+            <!-- Add Comment -->
+            <div class="api-endpoint">
+                <span class="endpoint-method">POST</span>
+                <strong>Add New Comment</strong>
+                <div class="endpoint-url">http://localhost:5000/api/comments/{locationId}</div>
+                <div class="test-buttons">
+                    <input type="text" id="commentLocationId" placeholder="Location ID" style="padding: 8px;">
+                    <input type="text" id="commentText" placeholder="Your comment" style="flex-grow: 1; padding: 8px;">
+                    <button class="test-btn test-post" onclick="testAddComment()">Add Comment</button>
+                </div>
+                <div class="result-box" id="addCommentResult">
+                    Enter location ID and comment
+                </div>
+            </div>
+        </div>
+        
+        <!-- Favorites -->
+        <div class="test-section">
+            <h2>⭐ Favorites API</h2>
+            
+            <!-- Get Favorites -->
+            <div class="api-endpoint">
+                <span class="endpoint-method">GET</span>
+                <strong>Get My Favorites</strong>
+                <div class="endpoint-url">http://localhost:5000/api/favorites/my-favorites</div>
+                <div class="test-buttons">
+                    <button class="test-btn test-get" onclick="testGetFavorites()">Get My Favorites</button>
+                </div>
+                <div class="result-box" id="favoritesResult">
+                    Click button to test (requires login)
+                </div>
+            </div>
+            
+            <!-- Add to Favorites -->
+            <div class="api-endpoint">
+                <span class="endpoint-method">POST</span>
+                <strong>Add to Favorites</strong>
+                <div class="endpoint-url">http://localhost:5000/api/favorites/{locationId}</div>
+                <div class="test-buttons">
+                    <input type="text" id="favLocationId" placeholder="Location ID" style="flex-grow: 1; padding: 8px;">
+                    <button class="test-btn test-post" onclick="testAddFavorite()">Add to Favorites</button>
+                    <button class="test-btn" onclick="testRemoveFavorite()" style="background: #dc3545;">Remove</button>
+                </div>
+                <div class="result-box" id="favoriteActionResult">
+                    Enter location ID
+                </div>
+            </div>
+        </div>
+        
+        <!-- Instructions -->
+        <div class="instructions">
+            <h3>📋 How to Use This Tester</h3>
+            <ol>
+                <li><strong>Start your backend server</strong>: <code>cd backend && node server.js</code></li>
+                <li><strong>Login first</strong> using the top form (you need a valid user in your database)</li>
+                <li><strong>Test each API</strong> by clicking the buttons</li>
+                <li><strong>Check console</strong> (F12) for detailed errors if something fails</li>
+                <li><strong>Default backend URL</strong>: http://localhost:5000 (change in JavaScript if different)</li>
+            </ol>
+            <p><strong>Note:</strong> Make sure your backend is running on port 5000 and CORS is enabled.</p>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let authToken = null;
+        let currentUser = null;
+        const API_BASE_URL = 'http://localhost:5000';
+        
+        // Format JSON for display
+        function formatJSON(obj) {
+            return JSON.stringify(obj, null, 2);
+        }
+        
+        // Show loading message
+        function showLoading(elementId) {
+            document.getElementById(elementId).innerHTML = 
+                '<span class="loading">Loading... Please wait</span>';
+        }
+        
+        // Display result
+        function displayResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            if (isError) {
+                element.innerHTML = `<span class="status-error">Error: ${data}</span>`;
+            } else {
+                element.innerHTML = `<pre>${formatJSON(data)}</pre>`;
+            }
+        }
+        
+        // Make API request
+        async function makeRequest(url, method = 'GET', body = null) {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+            
+            // Add auth token if available
+            if (authToken) {
+                options.headers['Authorization'] = `Bearer ${authToken}`;
+            }
+            
+            // Add body for POST/PUT requests
+            if (body && (method === 'POST' || method === 'PUT')) {
+                options.body = JSON.stringify(body);
+            }
+            
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                
+                return { success: true, data: data };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // Login function
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                displayResult('loginResult', 'Please enter username and password', true);
+                return;
+            }
+            
+            showLoading('loginResult');
+            
+            const result = await makeRequest(`${API_BASE_URL}/api/auth/login`, 'POST', {
+                username: username,
+                password: password
+            });
+            
+            if (result.success) {
+                authToken = result.data.token;
+                currentUser = result.data.user;
+                
+                // Show user info
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('displayUsername').textContent = currentUser.username;
+                document.getElementById('tokenPreview').textContent = 
+                    authToken.substring(0, 20) + '...';
+                
+                displayResult('loginResult', {
+                    message: 'Login successful!',
+                    user: currentUser,
+                    tokenPreview: authToken.substring(0, 20) + '...'
+                });
+            } else {
+                displayResult('loginResult', result.error, true);
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('loginResult').innerHTML = 'Logged out successfully.';
+        }
+        
+        // Test API Status
+        async function testApiStatus() {
+            showLoading('statusResult');
+            const result = await makeRequest(`${API_BASE_URL}/api/status`);
+            
+            if (result.success) {
+                const lastUpdated = new Date(result.data.lastUpdated).toLocaleString();
+                result.data.formattedLastUpdated = lastUpdated;
+                displayResult('statusResult', result.data);
+            } else {
+                displayResult('statusResult', result.error, true);
+            }
+        }
+        
+        // Test Get All Locations
+        async function testGetLocations() {
+            showLoading('locationsResult');
+            const result = await makeRequest(`${API_BASE_URL}/api/locations`);
+            
+            if (result.success) {
+                // Count locations and events
+                const locationCount = result.data.length;
+                const totalEvents = result.data.reduce((sum, loc) => sum + (loc.eventCount || 0), 0);
+                
+                const summary = {
+                    locationCount: locationCount,
+                    totalEvents: totalEvents,
+                    locations: result.data
+                };
+                
+                displayResult('locationsResult', summary);
+            } else {
+                displayResult('locationsResult', result.error, true);
+            }
+        }
+        
+        // Test Get Locations with Distance
+        async function testGetLocationsWithDistance() {
+            showLoading('locationsResult');
+            // Using Hong Kong coordinates as example
+            const userLat = 22.3193;
+            const userLng = 114.1694;
+            
+            const result = await makeRequest(
+                `${API_BASE_URL}/api/locations?userLat=${userLat}&userLng=${userLng}`
+            );
+            
+            if (result.success) {
+                displayResult('locationsResult', result.data);
+            } else {
+                displayResult('locationsResult', result.error, true);
+            }
+        }
+        
+        // Test Search Locations
+        async function testSearchLocations() {
+            showLoading('searchResult');
+            
+            const keyword = document.getElementById('searchKeyword').value;
+            const district = document.getElementById('searchDistrict').value;
+            const maxDistance = document.getElementById('searchDistance').value;
+            
+            let url = `${API_BASE_URL}/api/locations/search/filter?`;
+            const params = [];
+            
+            if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
+            if (district) params.push(`district=${encodeURIComponent(district)}`);
+            if (maxDistance) {
+                // Add Hong Kong coordinates for distance calculation
+                params.push(`maxDistance=${maxDistance}`);
+                params.push('userLat=22.3193');
+                params.push('userLng=114.1694');
+            }
+            
+            url += params.join('&');
+            
+            const result = await makeRequest(url);
+            
+            if (result.success) {
+                displayResult('searchResult', result.data);
+            } else {
+                displayResult('searchResult', result.error, true);
+            }
+        }
+        
+        // Test Get Comments
+        async function testGetComments() {
+            const locationId = document.getElementById('locationIdForComments').value;
+            
+            if (!locationId) {
+                displayResult('commentsResult', 'Please enter a Location ID', true);
+                return;
+            }
+            
+            showLoading('commentsResult');
+            const result = await makeRequest(
+                `${API_BASE_URL}/api/comments/location/${locationId}`
+            );
+            
+            if (result.success) {
+                displayResult('commentsResult', result.data);
+            } else {
+                displayResult('commentsResult', result.error, true);
+            }
+        }
+        
+        // Test Add Comment
+        async function testAddComment() {
+            const locationId = document.getElementById('commentLocationId').value;
+            const text = document.getElementById('commentText').value;
+            
+            if (!locationId || !text) {
+                displayResult('addCommentResult', 'Please enter Location ID and comment', true);
+                return;
+            }
+            
+            if (!authToken) {
+                displayResult('addCommentResult', 'Please login first', true);
+                return;
+            }
+            
+            showLoading('addCommentResult');
+            const result = await makeRequest(
+                `${API_BASE_URL}/api/comments/${locationId}`,
+                'POST',
+                { text: text }
+            );
+            
+            if (result.success) {
+                displayResult('addCommentResult', result.data);
+            } else {
+                displayResult('addCommentResult', result.error, true);
+            }
+        }
+        
+        // Test Get Favorites
+        async function testGetFavorites() {
+            if (!authToken) {
+                displayResult('favoritesResult', 'Please login first', true);
+                return;
+            }
+            
+            showLoading('favoritesResult');
+            const result = await makeRequest(`${API_BASE_URL}/api/favorites/my-favorites`);
+            
+            if (result.success) {
+                displayResult('favoritesResult', result.data);
+            } else {
+                displayResult('favoritesResult', result.error, true);
+            }
+        }
+        
+        // Test Add Favorite
+        async function testAddFavorite() {
+            const locationId = document.getElementById('favLocationId').value;
+            
+            if (!locationId) {
+                displayResult('favoriteActionResult', 'Please enter Location ID', true);
+                return;
+            }
+            
+            if (!authToken) {
+                displayResult('favoriteActionResult', 'Please login first', true);
+                return;
+            }
+            
+            showLoading('favoriteActionResult');
+            const result = await makeRequest(
+                `${API_BASE_URL}/api/favorites/${locationId}`,
+                'POST'
+            );
+            
+            if (result.success) {
+                displayResult('favoriteActionResult', result.data);
+            } else {
+                displayResult('favoriteActionResult', result.error, true);
+            }
+        }
+        
+        // Test Remove Favorite
+        async function testRemoveFavorite() {
+            const locationId = document.getElementById('favLocationId').value;
+            
+            if (!locationId) {
+                displayResult('favoriteActionResult', 'Please enter Location ID', true);
+                return;
+            }
+            
+            if (!authToken) {
+                displayResult('favoriteActionResult', 'Please login first', true);
+                return;
+            }
+            
+            showLoading('favoriteActionResult');
+            const result = await makeRequest(
+                `${API_BASE_URL}/api/favorites/${locationId}`,
+                'DELETE'
+            );
+            
+            if (result.success) {
+                displayResult('favoriteActionResult', result.data);
+            } else {
+                displayResult('favoriteActionResult', result.error, true);
+            }
+        }
+        
+        // Auto-test on page load
+        window.onload = function() {
+            console.log('API Tester loaded. Start your backend server on port 5000.');
+            console.log('Make sure to enable CORS in your backend:');
+            console.log('app.use(cors());');
+        };
+    </script>
+</body>
+</html>
