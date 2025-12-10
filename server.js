@@ -230,17 +230,52 @@ app.get('/api/venues', async (req, res) => {
 });
 
 // Find particular venueId
-app.get('/api/events/:venueId', (req, res) => Event.find({ venueId: req.params.venueId }).then(res.json));
+app.get('/api/events/:venueId', async (req, res) => {
+  res.json(await Event.find({ venueId: req.params.venueId }));
+});
 
 // Find particular comments
-app.get('/api/comments/:venueId', (req, res) => Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 }).then(res.json));
+app.get('/api/comments/:venueId', async (req, res) => {
+  res.json(await Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 }));
+});
 
-//
-app.post('/api/comments', (req, res) => new Comment(req.body).save().then(res.json));
+// Add a new comments
+app.post('/api/comments', async (req, res) => {
+  const c = new Comment(req.body);
+  await c.save();
+  res.json(c);                     
+});
 
 // Update on favourite
-app.post('/api/favourite', (req, res) => User.updateOne({ username: req.body.username }, { $addToSet: { favourites: req.body.venueId } }).then(() => res.json({ success: true })));
-app.delete('/api/favourite', (req, res) => User.updateOne({ username: req.body.username }, { $pull: { favourites: req.body.venueId } }).then(() => res.json({ success: true })));
+app.post('/api/favourite', async (req, res) => {
+  await User.updateOne({ username: req.body.username }, { $addToSet: { favourites: req.body.venueId } });
+  res.json({ success: true });
+});
+
+app.delete('/api/favourite', async (req, res) => {
+  try {
+    const { username, venueId } = req.body;
+
+    if (!username || !venueId) {
+      return res.status(400).json({ error: 'username and venueId are required' });
+    }
+
+    const result = await User.updateOne(
+      { username },
+      { $pull: { favourites: venueId } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: 'Favourite not found or already removed' });
+    }
+
+    res.json({ success: true, message: 'Removed from favourites' });
+  } catch (err) {
+    console.error('Delete favourite error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 app.get('/api/favourites/:username', async (req, res) => {
   const user = await User.findOne({ username: req.params.username });
   if (!user) return res.json([]);
@@ -248,14 +283,32 @@ app.get('/api/favourites/:username', async (req, res) => {
 });
 
 // Find, add, delete particular events
-app.get('/api/admin/events', (req, res) => Event.find().then(res.json));
-app.post('/api/admin/events', (req, res) => new Event(req.body).save().then(res.json));
-app.delete('/api/admin/events/:id', (req, res) => Event.findByIdAndDelete(req.params.id).then(() => res.json({ success: true })));
+app.get('/api/admin/events', async (req, res) => res.json(await Event.find()));
+app.post('/api/admin/events', async (req, res) => res.json(await new Event(req.body).save()));
+app.put('/api/admin/events/:id', async (req, res) => {
+  try {
+    const updated = await Event.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+app.delete('/api/admin/events/:id', async (req, res) => {
+  await Event.findByIdAndDelete(req.params.id);
+  res.json({ success: true });
+});
 
 // Find and update on user account
-app.get('/api/admin/users', (req, res) => User.find().select('-password').then(res.json));
-app.post('/api/admin/users', (req, res) => new User(req.body).save().then(res.json));
-app.delete('/api/admin/users/:id', (req, res) => User.findByIdAndDelete(req.params.id).then(() => res.json({ success: true })));
+app.get('/api/admin/users', async (req, res) => res.json(await User.find().select('-password')));
+app.post('/api/admin/users', async (req, res) => res.json(await new User(req.body).save()));
+app.delete('/api/admin/users/:id', async (req, res) => {
+  await User.findByIdAndDelete(req.params.id);
+  res.json({ success: true });
+});
 
 let currentTime = new Date(Date.now());
 app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }));
@@ -263,5 +316,4 @@ app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }
 // Start server
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
-  console.log('Run once: http://localhost:5000/seed');
 });
