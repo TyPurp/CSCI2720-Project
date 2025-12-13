@@ -193,6 +193,11 @@ async function seedDatabase() {
     await Venue.deleteMany({});
     await Event.deleteMany({});
     await User.deleteMany({});
+    
+    await User.create([
+      { username: 'user', password: '123456', role: 'user', favourites: [] },
+      { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
+    ]);
 
     for (const v of seedData.venues) {
       await new Venue(v).save();
@@ -200,16 +205,13 @@ async function seedDatabase() {
         await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
       }
     }
+
+
 }
 // ONE-TIME SEED ROUTE: reset all database into original
 app.get('/seed', async (req, res) => {
   try {
     // await mongoose.connection.db.dropDatabase();
-    /* await User.create([
-      { username: 'user', password: '123456', role: 'user', favourites: [] },
-      { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
-    ]);*/ 
-
     await seedDatabase();
     res.send('<h1>SEED SUCCESSFUL!</h1><p>10 venues + events + accounts ready<br>Last updated: 2025-12-09</p>');
   } catch (err) {
