@@ -188,11 +188,8 @@ const seedData = {
     }
   ]
 };
-
-// ONE-TIME SEED ROUTE: reset all database into original
-app.get('/seed', async (req, res) => {
-  try {
-    // await mongoose.connection.db.dropDatabase();
+async function seedDatabase() {
+  
     await Venue.deleteMany({});
     await Event.deleteMany({});
 
@@ -202,10 +199,17 @@ app.get('/seed', async (req, res) => {
         await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
       }
     }
+}
+// ONE-TIME SEED ROUTE: reset all database into original
+app.get('/seed', async (req, res) => {
+  try {
+    // await mongoose.connection.db.dropDatabase();
     /* await User.create([
       { username: 'user', password: '123456', role: 'user', favourites: [] },
       { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
     ]);*/ 
+
+    await seedDatabase();
     res.send('<h1>SEED SUCCESSFUL!</h1><p>10 venues + events + accounts ready<br>Last updated: 2025-12-09</p>');
   } catch (err) {
     res.status(500).send(err.message);
@@ -221,6 +225,17 @@ app.post('/api/login', async (req, res) => {
        : res.status(401).json({ success: false });
 });
 
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    return res.status(409).json({ success: false, message: 'Username already exists' });
+  }
+  const newUser = new User({ username, password });
+  await newUser.save();
+  res.json({ success: true, user: { username: newUser.username, role: newUser.role } });
+});
+
 app.get('/api/venues', async (req, res) => {
   const venues = await Venue.find();
   const counts = await Event.aggregate([{ $group: { _id: '$venueId', count: { $sum: 1 } } }]);
@@ -229,14 +244,25 @@ app.get('/api/venues', async (req, res) => {
   res.json(result);
 });
 
+app.get('/api/venues/:venueId', async (req, res) => {
+  const venue = await Venue.findOne({ venueId: req.params.venueId });
+  res.json(venue);
+});
+
 // Find particular venueId
-app.get('/api/events/:venueId', (req, res) => Event.find({ venueId: req.params.venueId }).then(res.json));
+app.get('/api/events/:venueId', async (req, res) => {
+  const event = await Event.find({ venueId: req.params.venueId });
+  res.json(event);
+});
 
 // Find particular comments
-app.get('/api/comments/:venueId', (req, res) => Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 }).then(res.json));
+app.get('/api/comments/:venueId', async (req, res) => {
+  const comment = await Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 });
+  res.json(comment);
+});
 
 //
-app.post('/api/comments', (req, res) => new Comment(req.body).save().then(res.json));
+app.post('/api/comments', async (req, res) => new Comment(req.body).save().then(res.json));
 
 // Update on favourite
 app.post('/api/favourite', (req, res) => User.updateOne({ username: req.body.username }, { $addToSet: { favourites: req.body.venueId } }).then(() => res.json({ success: true })));
@@ -253,7 +279,11 @@ app.post('/api/admin/events', (req, res) => new Event(req.body).save().then(res.
 app.delete('/api/admin/events/:id', (req, res) => Event.findByIdAndDelete(req.params.id).then(() => res.json({ success: true })));
 
 // Find and update on user account
-app.get('/api/admin/users', (req, res) => User.find().select('-password').then(res.json));
+app.get('/api/admin/users', async (req, res) => {
+  const users = await User.find().select('-password')
+  
+  res.json(users);
+});
 app.post('/api/admin/users', (req, res) => new User(req.body).save().then(res.json));
 app.delete('/api/admin/users/:id', (req, res) => User.findByIdAndDelete(req.params.id).then(() => res.json({ success: true })));
 
@@ -263,5 +293,6 @@ app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }
 // Start server
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
-  console.log('Run once: http://localhost:5000/seed');
+  // console.log('Run once: http://localhost:5000/seed');
+  seedDatabase();
 });
