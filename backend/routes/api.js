@@ -1,7 +1,7 @@
 // backend/routes/api.js
 const express = require('express');
 const router = express.Router();
-const Location = require('../models/Location');
+const Location = require('../models/Location.js');
 
 // 获取API状态和最后更新时间
 router.get('/status', async (req, res) => {
