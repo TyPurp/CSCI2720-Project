@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { fetchComments, postComment, getFavourites, toggleFavourite } from './api';
+import { fetchVenues, fetchVenue, fetchEvents, fetchComments, postComment, getFavourites, addFavourite, removeFavourite } from './api';
 
 // Fix default marker icons in react-leaflet (CRA-compatible)
 delete L.Icon.Default.prototype._getIconUrl;
@@ -56,24 +56,18 @@ function Locations({ filters, locationsSource }) {
   const [sortConfig, setSortConfig] = useState({ field: 'name', order: 'asc' });
   const [locations, setLocations] = useState(MOCK_LOCATIONS);
 
-  // If locationsSource provided (a URL), try to fetch; otherwise use MOCK
-  useEffect(() => {
+// If locationsSource provided (a URL), try to fetch; otherwise use MOCK
+useEffect(() => {   
   let cancelled = false;
   const apiBase = process.env.REACT_APP_API_BASE_URL;
   console.log('Locations useEffect — API base:', apiBase);
   if (apiBase) {
     (async () => {
       try {
-        const url = `${apiBase}/locations`;
-        console.log('Attempting fetch:', url);
-        const res = await fetch(url);
-        console.log('Fetch response:', res.status, res.statusText);
-        if (!res.ok) throw new Error('Failed to fetch locations');
-        const data = await res.json();
-        console.log('Fetched locations:', data);
+        const data = await fetchVenues();
         if (!cancelled && Array.isArray(data)) setLocations(data);
       } catch (err) {
-        console.warn('Failed to fetch locations from backend, using mock data', err);
+        console.warn('Failed to fetch venues from backend, using mock data', err);
       }
     })();
   }
@@ -184,27 +178,24 @@ function LocationDetail() {
 
   // Try to fetch location from backend if configured, otherwise use mock
   useEffect(() => {
-    let cancelled = false;
-    const apiBase = process.env.REACT_APP_API_BASE_URL;
-    if (apiBase) {
-      (async () => {
-        try {
-          const res = await fetch(`${apiBase}/locations/${locId}`);
-          if (!res.ok) throw new Error('Failed to fetch location');
-          const data = await res.json();
-          if (!cancelled) setLocation(data);
-        } catch (err) {
-          console.warn('Failed to fetch single location, falling back to mock', err);
-          const m = MOCK_LOCATIONS.find((l) => l.id === locId) || null;
-          if (!cancelled) setLocation(m);
-        }
-      })();
-    } else {
-      const m = MOCK_LOCATIONS.find((l) => l.id === locId) || null;
-      setLocation(m);
-    }
-    return () => { cancelled = true; };
-  }, [locId]);
+  let cancelled = false;
+  const apiBase = process.env.REACT_APP_API_BASE_URL;
+  if (apiBase) {
+    (async () => {
+      try {
+        const v = await fetchVenue(locId);
+        const evs = await fetchEvents(locId).catch(() => []);
+        if (!cancelled) setLocation({...v, events: evs});
+      } catch (err) {
+        console.warn('Failed to fetch location, falling back to mock', err);
+        if (!cancelled) setLocation(MOCK_LOCATIONS.find(l => l.id === locId) || null);
+      }
+    })();
+  } else {
+    setLocation(MOCK_LOCATIONS.find(l => l.id === locId) || null);
+  }
+  return () => { cancelled = true; };
+}, [locId]);
 
   // load favourite state (try backend first, fallback to localStorage)
   useEffect(() => {
