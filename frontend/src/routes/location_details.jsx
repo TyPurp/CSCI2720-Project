@@ -1,0 +1,102 @@
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import useVenue from "../hooks/useVenue";
+import { getFavourites, toggleFavourite } from "../api";
+import styles from "../components/styles";
+import Map from "../components/Map";
+import CommentsSection from "../components/CommentSection";
+import useAuth from "../hooks/useAuth";
+import NavBar from "../components/NavBar";
+
+export default function LocationDetail() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const locId = id;
+
+  const { user } = useAuth();
+  const venue = useVenue(locId);
+  const [isFav, setIsFav] = useState(false);
+
+  // load favourite state (try backend first, fallback to localStorage)
+  useEffect(() => {
+    let cancelled = false;
+    const apiBase = process.env.REACT_APP_API_BASE_URL;
+    if (apiBase) {
+      getFavourites(user?.username).then((favs) => {
+        if (!cancelled) setIsFav(Array.isArray(favs) ? favs.filter(loc => loc.venueId == locId).length > 0 : false);
+      }).catch(() => {
+        // fallback
+        const raw = JSON.parse(localStorage.getItem('favourites') || '[]');
+        if (!cancelled) setIsFav(raw.includes(locId));
+      });
+    } else {
+      const raw = JSON.parse(localStorage.getItem('favourites') || '[]');
+      setIsFav(raw.includes(locId));
+    }
+    return () => { cancelled = true; };
+  }, [locId]);
+
+  const handleToggleFav = async () => {
+    try {
+      const resp = await toggleFavourite(user?.username, locId);
+      // assume backend returns updated favourites array or success boolean
+      if (resp && Array.isArray(resp.favourites)) {
+        setIsFav(resp.favourites.includes(locId));
+      } else if (typeof resp === 'boolean') {
+        setIsFav(resp);
+      } else {
+        // re-query favourites
+        const favs = await getFavourites();
+        setIsFav(Array.isArray(favs) ? favs.includes(locId) : false);
+      }
+      return;
+    } catch (err) {
+      console.warn('toggleFavourite failed, falling back to localStorage', err);
+    }
+  };
+
+  if (venue === null) {
+    return <div style={{ padding: 20 }}><h2>Loading...</h2></div>;
+  }
+
+  if (!venue) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h2>Location not found</h2>
+        <button onClick={() => navigate('/locations')} style={styles.button}>Back to list</button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <NavBar />
+      <div style={{ padding: 20 }}>
+        <h2>{venue.nameEn}</h2>
+        <p>{venue.addressEn}</p>
+        <p>{venue.district}</p>
+        <p><strong>Coordinates:</strong> {venue.latitude}, {venue.longitude}</p>
+
+        <div style={{ height: 300, marginBottom: 12 }}>
+          <Map events={[venue]} centerOnUser={false} />
+        </div>
+
+        <div style={{ marginBottom: 12 }}>
+          <button onClick={handleToggleFav} style={{ ...styles.button, marginRight: 8 }}>
+            {isFav ? 'Remove Favourite' : 'Add Favourite'}
+          </button>
+          <Link to="/locations" style={{ ...styles.link, marginLeft: 8 }}>Back to locations</Link>
+        </div>
+
+        <section style={{ marginTop: 16 }}>
+          <h3>Events</h3>
+          {(venue.events || []).length ? (
+            <ul>{(venue.events || []).map((e) => <li key={e._id}>{e.titleEn} ({e.dateTime}) {e.presenterEn}</li>)}</ul>
+          ) : <p>No events listed.</p>}
+        </section>
+
+        <CommentsSection locationId={locId} />
+      </div>
+    </div>
+  );
+}

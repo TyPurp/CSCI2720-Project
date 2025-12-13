@@ -55,7 +55,12 @@ export async function postComment(venueId, { username, text }) {
 export async function getFavourites(username) {
   if (!username) throw new Error('username is required for getFavourites (backend)');
   const url = `${API}/api/favourites/${encodeURIComponent(username)}`;
-  return fetchJSON(url);
+  const result = await fetchJSON(url);
+
+  const favIds = Array.isArray(result) ? result.map((v) => v.venueId ?? v._id ?? v.id) : [];
+
+  localStorage.setItem('favourites', JSON.stringify(favIds)); // keep localStorage in sync
+  return result;
 }
 
 export async function addFavourite(username, venueId) {
@@ -65,6 +70,11 @@ export async function addFavourite(username, venueId) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, venueId }),
   });
+  const favs = JSON.parse(localStorage.getItem('favourites')) || [];
+  if (!favs.includes(venueId)) {
+    favs.push(venueId);
+    localStorage.setItem('favourites', JSON.stringify(favs));
+  }
   return res.ok ? res.json() : Promise.reject(new Error('Failed to add favourite'));
 }
 
@@ -75,5 +85,19 @@ export async function removeFavourite(username, venueId) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, venueId }),
   });
+  const favs = JSON.parse(localStorage.getItem('favourites'));
+  localStorage.setItem('favourites', JSON.stringify(favs.filter((id) => id !== venueId)));
   return res.ok ? res.json() : Promise.reject(new Error('Failed to remove favourite'));
+}
+
+export async function toggleFavourite(username, locId) {
+  const favs = await getFavourites(username)
+  
+  if (favs.filter(loc => loc.venueId === locId).length > 0) {
+    await removeFavourite(username, locId);
+    return false;
+  } else {
+    await addFavourite(username, locId);
+    return true;
+  }
 }
