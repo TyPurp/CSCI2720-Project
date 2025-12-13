@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSCI 2720 Admin Test</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, textarea, select, button { padding: 10px; margin: 5px; font-size: 16px; }
+    button { cursor: pointer; }
+    .bg-green-600 { background: #16a34a; color: white; }
+    .bg-blue-600 { background: #2563eb; color: white; }
+    .bg-red-600 { background: #dc2626; color: white; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const API = 'http://localhost:5000/api';
+
+    function App() {
+      const [user, setUser] = React.useState(null);
+      const [page, setPage] = React.useState('login');
+      const [adminEvents, setAdminEvents] = React.useState([]);
+      const [adminUsers, setAdminUsers] = React.useState([]);
+
+      const login = (u, p) => {
+        fetch(`${API}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        })
+        .then(r => r.json())
+        .then(d => {
+          if (d.success) {
+            setUser(d.user);
+            setPage('admin-events');
+            fetch(`${API}/admin/events`).then(r => r.json()).then(setAdminEvents);
+            fetch(`${API}/admin/users`).then(r => r.json()).then(setAdminUsers);
+          } else alert('Login failed');
+        });
+      };
+
+      if (!user) {
+        return (
+          <div className="container">
+            <h1>CSCI 2720 Admin Panel Test</h1>
+            <button onClick={() => login('admin', 'admin123')} className="bg-green-600" style={{padding: '15px 30px', fontSize: '18px'}}>
+              Login as Admin (admin / admin123)
+            </button>
+            <br/><br/>
+            <button onClick={() => login('user', '123456')} className="bg-blue-600" style={{padding: '15px 30px', fontSize: '18px'}}>
+              Login as User (user / 123456)
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="container">
+          <div style={{padding: '20px', background: '#f4f4f4', marginBottom: '20px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between'}}>
+            <div>
+              <button onClick={() => setPage('admin-events')}>Admin Events</button> | 
+              <button onClick={() => setPage('admin-users')}>Admin Users</button>
+            </div>
+            <div>
+              Welcome <strong>{user.username}</strong> ({user.role}) 
+              <button onClick={() => setUser(null)} style={{marginLeft: '20px', color: 'red'}}>Logout</button>
+            </div>
+          </div>
+
+          {/* PASTE YOUR ADMIN CODE BELOW THIS LINE */}
+          {page === 'admin-events' && user.role === 'admin' && (
+            <div className="max-w-7xl mx-auto p-6">
+              <h1 className="text-3xl font-bold mb-6">Admin - Manage Events</h1>
+              
+              <div className="p-6 mb-8 rounded-lg border bg-gray-50">
+                <h2 className="text-xl font-semibold mb-4">Add New Event</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input placeholder="Title (English)" id="newTitle" className="p-3 border rounded" />
+                  <input placeholder="Venue ID (e.g. 35510044)" id="newVenueId" className="p-3 border rounded" />
+                  <input placeholder="Venue Name" id="newVenueName" className="p-3 border rounded" />
+                  <input placeholder="Date & Time" id="newDateTime" className="p-3 border rounded" />
+                  <input placeholder="Presenter" id="newPresenter" className="p-3 border rounded" />
+                  <textarea placeholder="Description (optional)" id="newDesc" className="p-3 border rounded md:col-span-2" rows="3"></textarea>
+                  <button onClick={() => {
+                    const event = {
+                      titleEn: document.getElementById('newTitle').value,
+                      venueId: document.getElementById('newVenueId').value,
+                      venueName: document.getElementById('newVenueName').value,
+                      dateTime: document.getElementById('newDateTime').value,
+                      presenterEn: document.getElementById('newPresenter').value,
+                      description: document.getElementById('newDesc').value
+                    };
+                    fetch(`${API}/admin/events`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(event)
+                    }).then(() => {
+                      alert('Event added!');
+                      fetch(`${API}/admin/events`).then(r => r.json()).then(setAdminEvents);
+                    });
+                  }} className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+                    Add Event
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {adminEvents.map(e => (
+                  <div key={e._id} className="p-6 rounded-lg border bg-white shadow">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold">{e.titleEn}</h3>
+                        <p><strong>Venue:</strong> {e.venueName} ({e.venueId})</p>
+                        <p><strong>Date:</strong> {e.dateTime}</p>
+                        <p><strong>Presenter:</strong> {e.presenterEn}</p>
+                        {e.description && <p className="mt-2 text-gray-600"><em>{e.description}</em></p>}
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => {
+                          const newTitle = prompt('New title:', e.titleEn);
+                          if (newTitle) {
+                            fetch(`${API}/admin/events/${e._id}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ titleEn: newTitle })
+                            }).then(() => fetch(`${API}/admin/events`).then(r => r.json()).then(setAdminEvents));
+                          }
+                        }} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                          Edit
+                        </button>
+                        <button onClick={() => {
+                          if (confirm('Delete this event?')) {
+                            fetch(`${API}/admin/events/${e._id}`, { method: 'DELETE' })
+                              .then(() => setAdminEvents(adminEvents.filter(x => x._id !== e._id)));
+                          }
+                        }} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {page === 'admin-users' && user.role === 'admin' && (
+            <div className="max-w-4xl mx-auto p-6">
+              <h1 className="text-3xl font-bold mb-6">Admin - Manage Users</h1>
+              <div className="p-6 mb-8 rounded-lg border bg-gray-50">
+                <h2 className="text-xl font-semibold mb-4">Create New User</h2>
+                <div className="flex gap-4">
+                  <input placeholder="Username" id="newUser" className="p-3 border rounded flex-1" />
+                  <input placeholder="Password" id="newPass" type="password" className="p-3 border rounded flex-1" />
+                  <select id="newRole" className="p-3 border rounded">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <button onClick={() => {
+                    const username = document.getElementById('newUser').value;
+                    const password = document.getElementById('newPass').value;
+                    const role = document.getElementById('newRole').value;
+                    if (username && password) {
+                      fetch(`${API}/admin/users`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, role })
+                      }).then(() => {
+                        alert('User created!');
+                        fetch(`${API}/admin/users`).then(r => r.json()).then(setAdminUsers);
+                      });
+                    }
+                  }} className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+                    Create User
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {adminUsers.map(u => (
+                  <div key={u._id} className="p-6 rounded-lg border bg-white shadow flex justify-between items-center">
+                    <div>
+                      <strong className="text-xl">{u.username}</strong>
+                      <span className="ml-4 text-gray-600">Role: {u.role}</span>
+                    </div>
+                    <button onClick={() => {
+                      if (confirm(`Delete user "${u.username}"?`)) {
+                        fetch(`${API}/admin/users/${u._id}`, { method: 'DELETE' })
+                          .then(() => setAdminUsers(adminUsers.filter(x => x._id !== u._id)));
+                      }
+                    }} className="bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700">
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
