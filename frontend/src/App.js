@@ -31,8 +31,6 @@ function App() {
   // User location state (gets updated with browser geolocation if allowed)
   return (
     <div className="App">
-      
-
       <main style={{ padding: 0 }}>
         <Routes>
           <Route path="/login" element={<Login />} />
