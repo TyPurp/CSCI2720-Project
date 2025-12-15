@@ -334,6 +334,45 @@ app.delete('/api/admin/users/:id', async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
+app.put('/api/admin/users/:id', async (req, res) => {
+  const { username, password, role } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ message: 'Username is required' });
+  }
+
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if new username is taken by someone else
+    if (username !== user.username) {
+      const existing = await User.findOne({ username });
+      if (existing) {
+        return res.status(400).json({ message: 'Username already taken' });
+      }
+    }
+
+    // Update fields
+    user.username = username;
+    user.role = role || user.role;
+
+    // Only update password if provided
+    if (password) {
+      user.password = password; // this will be hashed by your pre-save hook
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select('-password');
+    res.json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update user' });
+  }
+});
 
 let currentTime = new Date(Date.now());
 app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }));
@@ -344,4 +383,5 @@ app.listen(5000, () => {
   // console.log('Run once: http://localhost:5000/seed');
   seedDatabase();
 });
+
 
