@@ -7,6 +7,7 @@ import Map from "../components/Map";
 import CommentsSection from "../components/CommentSection";
 import useAuth from "../hooks/useAuth";
 import NavBar from "../components/NavBar";
+import LikeButton from "../components/LikeButton";
 
 export default function LocationDetail() {
   const { id } = useParams();
@@ -17,7 +18,6 @@ export default function LocationDetail() {
   const venue = useVenue(locId);
   const [isFav, setIsFav] = useState(false);
 
-  // load favourite state (try backend first, fallback to localStorage)
   useEffect(() => {
     let cancelled = false;
     const apiBase = process.env.REACT_APP_API_BASE_URL;
@@ -25,7 +25,6 @@ export default function LocationDetail() {
       getFavourites(user?.username).then((favs) => {
         if (!cancelled) setIsFav(Array.isArray(favs) ? favs.filter(loc => loc.venueId == locId).length > 0 : false);
       }).catch(() => {
-        // fallback
         const raw = JSON.parse(localStorage.getItem('favourites') || '[]');
         if (!cancelled) setIsFav(raw.includes(locId));
       });
@@ -39,13 +38,11 @@ export default function LocationDetail() {
   const handleToggleFav = async () => {
     try {
       const resp = await toggleFavourite(user?.username, locId);
-      // assume backend returns updated favourites array or success boolean
       if (resp && Array.isArray(resp.favourites)) {
         setIsFav(resp.favourites.includes(locId));
       } else if (typeof resp === 'boolean') {
         setIsFav(resp);
       } else {
-        // re-query favourites
         const favs = await getFavourites();
         setIsFav(Array.isArray(favs) ? favs.includes(locId) : false);
       }
@@ -91,7 +88,33 @@ export default function LocationDetail() {
         <section style={{ marginTop: 16 }}>
           <h3>Events</h3>
           {(venue.events || []).length ? (
-            <ul>{(venue.events || []).map((e) => <li key={e._id}>{e.titleEn} ({e.dateTime}) {e.presenterEn}</li>)}</ul>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {(venue.events || []).map((e) => (
+                <li key={e._id} style={{ 
+                  marginBottom: '15px', 
+                  padding: '15px', 
+                  backgroundColor: 'var(--card-bg)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <div>
+                    <strong style={{ fontSize: '16px' }}>{e.titleEn}</strong>
+                    <div style={{ color: 'var(--text-color)', opacity: 0.8, marginTop: '5px' }}>
+                      {e.dateTime} • {e.presenterEn}
+                    </div>
+                    {e.description && (
+                      <div style={{ marginTop: '8px', fontSize: '14px' }}>
+                        {e.description}
+                      </div>
+                    )}
+                  </div>
+                  <LikeButton eventId={e._id} initialLikeCount={e.likeCount || 0} />
+                </li>
+              ))}
+            </ul>
           ) : <p>No events listed.</p>}
         </section>
 
