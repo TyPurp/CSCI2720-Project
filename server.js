@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// Allow all frontend (no cors package needed)
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
@@ -13,22 +12,19 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-// Connect to MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/project')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log('MongoDB error:', err));
 
-// User
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
-  favourites: [{ type: String }],  // venueId strings
-  theme: { type: String, enum: ['light', 'dark'], default: 'light' }  // ✅ ADDED: theme field
+  favourites: [{ type: String }],
+  theme: { type: String, enum: ['light', 'dark'], default: 'light' }
 });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Venue
 const venueSchema = new mongoose.Schema({
   venueId: { type: String, required: true, unique: true },
   nameEn: { type: String, required: true },
@@ -39,18 +35,17 @@ const venueSchema = new mongoose.Schema({
 });
 const Venue = mongoose.models.Venue || mongoose.model('Venue', venueSchema);
 
-// Event
 const eventSchema = new mongoose.Schema({
   titleEn: { type: String, required: true },
   venueId: { type: String, required: true },
   venueName: { type: String, required: true },
   dateTime: { type: String, required: true },
   description: String,
-  presenterEn: { type: String, required: true }
+  presenterEn: { type: String, required: true },
+  likeCount: { type: Number, default: 0 }
 });
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
 
-// Comment
 const commentSchema = new mongoose.Schema({
   venueId: { type: String, required: true },
   username: { type: String, required: true },
@@ -59,7 +54,12 @@ const commentSchema = new mongoose.Schema({
 });
 const Comment = mongoose.models.Comment || mongoose.model('Comment', commentSchema);
 
-// SEED DATA (10 venues)
+const likeSchema = new mongoose.Schema({
+  eventId: { type: String, required: true },
+  username: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+const Like = mongoose.models.Like || mongoose.model('Like', likeSchema);
 
 const seedData = {
   venues: [
@@ -194,6 +194,7 @@ async function seedDatabase() {
     await Venue.deleteMany({});
     await Event.deleteMany({});
     await User.deleteMany({});
+    await Like.deleteMany({});
     
     await User.create([
       { username: 'user', password: '123456', role: 'user', favourites: [], theme: 'light' },
@@ -208,17 +209,14 @@ async function seedDatabase() {
     }
 }
 
-// ONE-TIME SEED ROUTE: reset all database into original
 app.get('/seed', async (req, res) => {
   try {
     await seedDatabase();
-    res.send('<h1>SEED SUCCESSFUL!</h1><p>10 venues + events + accounts ready<br>Last updated: 2025-12-09</p>');
+    res.send('<h1>SEED SUCCESSFUL!</h1><p>10 venues + events + accounts ready<br>Last updated: 2025-12-16</p>');
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
-
-// ALL API ROUTES 
 
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
@@ -278,26 +276,22 @@ app.get('/api/venues/:venueId', async (req, res) => {
   res.json(venue);
 });
 
-// Find particular venueId
 app.get('/api/events/:venueId', async (req, res) => {
   const event = await Event.find({ venueId: req.params.venueId });
   res.json(event);
 });
 
-// Find particular comments
 app.get('/api/comments/:venueId', async (req, res) => {
   const comment = await Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 });
   res.json(comment);
 });
 
-// Add a new comments
 app.post('/api/comments', async (req, res) => {
   const c = new Comment(req.body);
   await c.save();
   res.json(c);                     
 });
 
-// Update on favourite
 app.post('/api/favourite', async (req, res) => {
   await User.updateOne({ username: req.body.username }, { $addToSet: { favourites: req.body.venueId } });
   res.json({ success: true });
@@ -333,7 +327,62 @@ app.get('/api/favourites/:username', async (req, res) => {
   res.json(await Venue.find({ venueId: { $in: user.favourites } }));
 });
 
-// Find, add, delete particular events
+app.get('/api/events/:eventId/likes/:username', async (req, res) => {
+  try {
+    const like = await Like.findOne({ 
+      eventId: req.params.eventId, 
+      username: req.params.username 
+    });
+    res.json({ liked: !!like });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/events/:eventId/likes', async (req, res) => {
+  try {
+    const count = await Like.countDocuments({ eventId: req.params.eventId });
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/events/:eventId/like', async (req, res) => {
+  const { eventId } = req.params;
+  const { username, action } = req.body;
+  
+  try {
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    
+    if (action === 'like') {
+      const existingLike = await Like.findOne({ eventId, username });
+      if (!existingLike) {
+        await Like.create({ eventId, username });
+        event.likeCount += 1;
+        await event.save();
+      }
+    } else if (action === 'unlike') {
+      const result = await Like.deleteOne({ eventId, username });
+      if (result.deletedCount > 0 && event.likeCount > 0) {
+        event.likeCount -= 1;
+        await event.save();
+      }
+    }
+    
+    res.json({ 
+      success: true, 
+      likeCount: event.likeCount,
+      liked: action === 'like'
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/admin/events', async (req, res) => res.json(await Event.find()));
 app.post('/api/admin/events', async (req, res) => res.json(await new Event(req.body).save()));
 app.put('/api/admin/events/:id', async (req, res) => {
@@ -353,7 +402,6 @@ app.delete('/api/admin/events/:id', async (req, res) => {
   res.json({ success: true });
 });
 
-// Find and update on user account
 app.get('/api/admin/users', async (req, res) => res.json(await User.find().select('-password')));
 app.post('/api/admin/users', async (req, res) => res.json(await new User(req.body).save()));
 app.delete('/api/admin/users/:id', async (req, res) => {
@@ -373,7 +421,6 @@ app.put('/api/admin/users/:id', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if new username is taken by someone else
     if (username !== user.username) {
       const existing = await User.findOne({ username });
       if (existing) {
@@ -381,12 +428,10 @@ app.put('/api/admin/users/:id', async (req, res) => {
       }
     }
 
-    // Update fields
     user.username = username;
     user.role = role || user.role;
     user.theme = theme || user.theme;
 
-    // Only update password if provided
     if (password) {
       user.password = password;
     }
@@ -404,7 +449,6 @@ app.put('/api/admin/users/:id', async (req, res) => {
 let currentTime = new Date(Date.now());
 app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }));
 
-// Start server
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
   seedDatabase();
