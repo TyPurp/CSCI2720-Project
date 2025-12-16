@@ -228,7 +228,7 @@ app.post('/api/login', async (req, res) => {
     user: { 
       username: user.username, 
       role: user.role, 
-      theme: user.theme  // ✅ ADDED: include theme in response
+      theme: user.theme
     } 
   }) : res.status(401).json({ success: false });
 });
@@ -246,12 +246,11 @@ app.post('/api/register', async (req, res) => {
     user: { 
       username: newUser.username, 
       role: newUser.role, 
-      theme: newUser.theme  // ✅ ADDED: include theme in response
+      theme: newUser.theme
     } 
   });
 });
 
-// ✅ ADDED: Update user theme preference
 app.put('/api/user/theme', async (req, res) => {
   const { username, theme } = req.body;
   try {
@@ -362,7 +361,7 @@ app.delete('/api/admin/users/:id', async (req, res) => {
   res.json({ success: true });
 });
 app.put('/api/admin/users/:id', async (req, res) => {
-  const { username, password, role, theme } = req.body;  // ✅ ADDED: theme parameter
+  const { username, password, role, theme } = req.body;
 
   if (!username) {
     return res.status(400).json({ message: 'Username is required' });
@@ -385,7 +384,7 @@ app.put('/api/admin/users/:id', async (req, res) => {
     // Update fields
     user.username = username;
     user.role = role || user.role;
-    user.theme = theme || user.theme;  // ✅ ADDED: update theme
+    user.theme = theme || user.theme;
 
     // Only update password if provided
     if (password) {
