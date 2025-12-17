@@ -8,6 +8,11 @@ body.light {
   --link-color: #3498db;
   --hover-color: #f0f0f0;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  /* 搜索栏相关 - 亮色模式 */
+  --search-bar-bg: #ffffff;
+  --search-text: #333333;
+  --search-placeholder: #666666;
+  --search-border: #cccccc;
 }
 
 body.dark {
@@ -20,6 +25,11 @@ body.dark {
   --link-color: #4dabf7;
   --hover-color: #2a2a2a;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  /* 搜索栏相关 - 深色模式 */
+  --search-bar-bg: #f0f0f0;      /* 浅灰色背景 */
+  --search-text: #000000;        /* 黑色文字 */
+  --search-placeholder: #666666; /* 灰色占位符 */
+  --search-border: #cccccc;      /* 浅灰色边框 */
 }
 
 body {
@@ -76,6 +86,7 @@ th, td {
   border: 1px solid var(--border-color);
   padding: 12px;
   text-align: left;
+  color: var(--text-color);
 }
 
 th {
@@ -87,9 +98,106 @@ tr:hover {
   background-color: var(--hover-color);
 }
 
+/* ====== 搜索栏样式 ====== */
+.search-filter-bar {
+  background-color: var(--search-bar-bg);
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--search-border);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search-box input {
+  flex: 1;
+  max-width: 400px;
+  background-color: white;
+  color: #000000;
+  border: 1px solid var(--search-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.search-box input::placeholder {
+  color: var(--search-placeholder);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--link-color);
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* ====== 筛选按钮和下拉菜单 ====== */
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.filter-btn {
+  background-color: white;
+  color: #000000;
+  border: 1px solid var(--search-border);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  background-color: var(--link-color);
+  color: white;
+  border-color: var(--link-color);
+}
+
+.filter-options select {
+  background-color: white;
+  color: #000000;
+  border: 1px solid var(--search-border);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 140px;
+  cursor: pointer;
+}
+
+.filter-options select option {
+  background-color: white;
+  color: #000000;
+  padding: 8px;
+}
+
+.clear-btn {
+  background-color: white;
+  color: #000000;
+  border: 1px solid var(--search-border);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.clear-btn:hover {
+  background-color: var(--link-color);
+  color: white;
+  border-color: var(--link-color);
+}
+
+/* ====== 其他输入元素 ====== */
 input, 
 textarea, 
-select {
+select:not(.filter-options select) {
   background-color: var(--card-bg);
   color: var(--text-color);
   border: 1px solid var(--border-color);
@@ -114,10 +222,89 @@ select:focus {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .btn:hover {
   opacity: 0.9;
+}
+
+/* ====== 导航栏 ====== */
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: var(--header-bg);
+  color: white;
+  padding: 16px 0;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 20px;
+  margin-right: auto;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  margin-right: auto;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: var(--link-color);
+}
+
+.nav-logout {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  margin-right: 20px;
+  font-weight: 500;
+}
+
+.nav-logout:hover {
+  color: var(--link-color);
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -136,6 +323,41 @@ select:focus {
     flex-wrap: wrap;
     justify-content: center;
     margin-top: 10px;
+  }
+  
+  .nav-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .nav-logo {
+    margin: 10px 0;
+    font-size: 16px;
+  }
+  
+  .nav-links {
+    gap: 15px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .user-actions {
+    margin: 10px 0;
+    gap: 10px;
+  }
+  
+  .nav-logout {
+    margin-right: 0;
+  }
+  
+  .filter-options {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-options select {
+    width: 100%;
   }
 }
 
