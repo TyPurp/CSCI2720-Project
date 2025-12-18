@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-// Allow all frontend (no cors package needed)
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
@@ -13,21 +12,18 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 
-// Connect to MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/project')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log('MongoDB error:', err));
 
-// User
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
-  favourites: [{ type: String }]  // venueId strings
+  favourites: [{ type: String }]
 });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-// Venue
 const venueSchema = new mongoose.Schema({
   venueId: { type: String, required: true, unique: true },
   nameEn: { type: String, required: true },
@@ -38,18 +34,24 @@ const venueSchema = new mongoose.Schema({
 });
 const Venue = mongoose.models.Venue || mongoose.model('Venue', venueSchema);
 
-// Event
 const eventSchema = new mongoose.Schema({
   titleEn: { type: String, required: true },
   venueId: { type: String, required: true },
   venueName: { type: String, required: true },
   dateTime: { type: String, required: true },
   description: String,
-  presenterEn: { type: String, required: true }
+  presenterEn: { type: String, required: true },
+  likes: {
+    type: [String],
+    default: []
+  },
+  likeCount: {
+    type: Number,
+    default: 0
+  }
 });
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
 
-// Comment
 const commentSchema = new mongoose.Schema({
   venueId: { type: String, required: true },
   username: { type: String, required: true },
@@ -57,8 +59,6 @@ const commentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 const Comment = mongoose.models.Comment || mongoose.model('Comment', commentSchema);
-
-// SEED DATA (10 venues)
 
 const seedData = {
   venues: [
@@ -189,10 +189,8 @@ const seedData = {
   ]
 };
 
-// ONE-TIME SEED ROUTE: reset all database(event, venue and user) into original
 app.get('/seed', async (req, res) => {
   try {
-    // await mongoose.connection.db.dropDatabase();
     await Venue.deleteMany({});
     await Event.deleteMany({});
     await User.deleteMany({});
@@ -215,8 +213,6 @@ app.get('/seed', async (req, res) => {
   }
 });
 
-// ALL API ROUTES 
-
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username, password });
@@ -232,17 +228,11 @@ app.get('/api/venues', async (req, res) => {
   res.json(result);
 });
 
-// ===========================================
-// NEW ROUTES FOR EVENT LIST PAGE
-// ===========================================
-
-// 1. Get all events with optional search
 app.get('/api/events', async (req, res) => {
   try {
     const { search, venue, date } = req.query;
     let query = {};
     
-    // Apply search filter
     if (search) {
       query.$or = [
         { titleEn: { $regex: search, $options: 'i' } },
@@ -252,15 +242,11 @@ app.get('/api/events', async (req, res) => {
       ];
     }
     
-    // Apply venue filter
     if (venue && venue !== 'All' && venue !== '') {
       query.venueName = venue;
     }
     
-    // Apply date filter (you may need to adjust this based on your dateTime format)
     if (date) {
-      // Since dateTime is a string like "30-31 Jan 2026", we need to parse it
-      // This is a simple implementation - you might need more complex date parsing
       query.dateTime = { $regex: date, $options: 'i' };
     }
     
@@ -272,7 +258,6 @@ app.get('/api/events', async (req, res) => {
   }
 });
 
-// 2. Get unique venues for filter dropdown
 app.get('/api/events/venues', async (req, res) => {
   try {
     const venues = await Event.distinct('venueName');
@@ -283,7 +268,6 @@ app.get('/api/events/venues', async (req, res) => {
   }
 });
 
-// 3. Get single event by ID
 app.get('/api/events/id/:id', async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -297,28 +281,20 @@ app.get('/api/events/id/:id', async (req, res) => {
   }
 });
 
-// ===========================================
-// EXISTING ROUTES (unchanged)
-// ===========================================
-
-// Find particular venueId events
 app.get('/api/events/:venueId', async (req, res) => {
   res.json(await Event.find({ venueId: req.params.venueId }));
 });
 
-// Find particular comments
 app.get('/api/comments/:venueId', async (req, res) => {
   res.json(await Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 }));
 });
 
-// Add a new comments
 app.post('/api/comments', async (req, res) => {
   const c = new Comment(req.body);
   await c.save();
   res.json(c);                     
 });
 
-// Update on favourite
 app.post('/api/favourite', async (req, res) => {
   await User.updateOne({ username: req.body.username }, { $addToSet: { favourites: req.body.venueId } });
   res.json({ success: true });
@@ -354,7 +330,74 @@ app.get('/api/favourites/:username', async (req, res) => {
   res.json(await Venue.find({ venueId: { $in: user.favourites } }));
 });
 
-// Find, add, delete particular events
+app.get('/api/events/:eventId/likes', async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    res.json({ count: event.likeCount || 0 });
+  } catch (error) {
+    console.error('Error fetching event likes:', error);
+    res.status(500).json({ error: 'Failed to fetch likes' });
+  }
+});
+
+app.get('/api/events/:eventId/likes/:username', async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    const liked = event.likes.includes(req.params.username);
+    res.json({ liked });
+  } catch (error) {
+    console.error('Error checking user like:', error);
+    res.status(500).json({ error: 'Failed to check like status' });
+  }
+});
+
+app.post('/api/events/:eventId/like', async (req, res) => {
+  try {
+    const { username, action } = req.body;
+    const event = await Event.findById(req.params.eventId);
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    const userAlreadyLiked = event.likes.includes(username);
+    let liked = false;
+    let newLikeCount = event.likeCount;
+
+    if (action === 'like' && !userAlreadyLiked) {
+      event.likes.push(username);
+      event.likeCount += 1;
+      liked = true;
+      newLikeCount = event.likeCount;
+    } else if (action === 'unlike' && userAlreadyLiked) {
+      event.likes = event.likes.filter(u => u !== username);
+      event.likeCount = Math.max(0, event.likeCount - 1);
+      liked = false;
+      newLikeCount = event.likeCount;
+    } else {
+      liked = userAlreadyLiked;
+    }
+
+    await event.save();
+
+    res.json({
+      success: true,
+      action,
+      liked,
+      likeCount: newLikeCount
+    });
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    res.status(500).json({ error: 'Failed to toggle like' });
+  }
+});
+
 app.get('/api/admin/events', async (req, res) => res.json(await Event.find()));
 app.post('/api/admin/events', async (req, res) => res.json(await new Event(req.body).save()));
 app.put('/api/admin/events/:id', async (req, res) => {
@@ -374,7 +417,6 @@ app.delete('/api/admin/events/:id', async (req, res) => {
   res.json({ success: true });
 });
 
-// Find and update on user account
 app.get('/api/admin/users', async (req, res) => res.json(await User.find().select('-password')));
 app.post('/api/admin/users', async (req, res) => res.json(await new User(req.body).save()));
 app.delete('/api/admin/users/:id', async (req, res) => {
@@ -394,7 +436,6 @@ app.put('/api/admin/users/:id', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if new username is taken by someone else
     if (username !== user.username) {
       const existing = await User.findOne({ username });
       if (existing) {
@@ -402,13 +443,11 @@ app.put('/api/admin/users/:id', async (req, res) => {
       }
     }
 
-    // Update fields
     user.username = username;
     user.role = role || user.role;
 
-    // Only update password if provided
     if (password) {
-      user.password = password; // this will be hashed by your pre-save hook
+      user.password = password;
     }
 
     await user.save();
@@ -424,7 +463,6 @@ app.put('/api/admin/users/:id', async (req, res) => {
 let currentTime = new Date(Date.now());
 app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }));
 
-// Start server
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
 });
