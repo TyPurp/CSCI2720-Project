@@ -1,3 +1,10 @@
+/*
+CSCI2720 Project:
+Members:
+Chow Ho Yee (1155214324)
+Ho Chi Tung (1155213294)
+Lam Tsz Yi (1155212543)
+ */
 export default {
   table: { width: '100%', borderCollapse: 'collapse', marginTop: '16px', fontSize: '14px' },
   th: { padding: '12px', textAlign: 'left', backgroundColor: '#282c34', color: 'white', cursor: 'pointer', userSelect: 'none', border: '1px solid #ddd' },
