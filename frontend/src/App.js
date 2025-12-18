@@ -13,6 +13,7 @@ import Locations from './routes/locations';
 import LocationDetail from './routes/location_details';
 import MapView from './routes/map_view';
 import FavouritesPage from './routes/favourites';
+import EventList from './routes/EventList';
 
 import AdminEvents from './routes/AdminEvent';
 import AdminUsers from './routes/AdminUser';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/locations" element={<Locations />} />
           <Route path="/locations/:id" element={<LocationDetail />} />
+          <Route path="/event-list" element={<EventList />} />
           <Route path="/map" element={<MapView />} />
           <Route path="/favourites" element={<FavouritesPage />} />
           <Route path="/admin/events" element={<AdminEvents />}/>
