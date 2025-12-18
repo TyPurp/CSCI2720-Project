@@ -191,28 +191,27 @@ const seedData = {
   ]
 };
 async function seedDatabase() {
+  await Venue.deleteMany({});
+  await Event.deleteMany({});
+  await User.deleteMany({});
   
-    await Venue.deleteMany({});
-    await Event.deleteMany({});
-    await User.deleteMany({});
-    
-    await User.create([
-      { username: 'user', password: '123456', role: 'user', favourites: [] },
-      { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
-    ]);
+  await User.create([
+    { username: 'user', password: '123456', role: 'user', favourites: [] },
+    { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
+  ]);
 
-    const venueData = await fetchVenueData() || seedData;
+  const venueData = await fetchVenueData() || seedData;
 
-    for (const v of venueData.venues) {
-      await new Venue(v).save();
-      for (const e of v.events) {
-        await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
-      }
+  for (const v of venueData.venues) {
+    await new Venue(v).save();
+    for (const e of v.events) {
+      await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
     }
+  }
 
   console.log('Database seeded');
-
 }
+)
 // ONE-TIME SEED ROUTE: reset all database into original
 app.get('/seed', async (req, res) => {
   try {
@@ -233,17 +232,6 @@ app.post('/api/login', async (req, res) => {
        : res.status(401).json({ success: false });
 });
 
-app.post('/api/register', async (req, res) => {
-  const { username, password } = req.body;
-  const existingUser = await User.findOne({ username });
-  if (existingUser) {
-    return res.status(409).json({ success: false, message: 'Username already exists' });
-  }
-  const newUser = new User({ username, password });
-  await newUser.save();
-  res.json({ success: true, user: { username: newUser.username, role: newUser.role } });
-});
-
 app.get('/api/venues', async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const offset = parseInt(req.query.offset) || 0;
@@ -255,21 +243,14 @@ app.get('/api/venues', async (req, res) => {
   res.json(result);
 });
 
-app.get('/api/venues/:venueId', async (req, res) => {
-  const venue = await Venue.findOne({ venueId: req.params.venueId });
-  res.json(venue);
-});
-
 // Find particular venueId
 app.get('/api/events/:venueId', async (req, res) => {
-  const event = await Event.find({ venueId: req.params.venueId });
-  res.json(event);
+  res.json(await Event.find({ venueId: req.params.venueId }));
 });
 
 // Find particular comments
 app.get('/api/comments/:venueId', async (req, res) => {
-  const comment = await Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 });
-  res.json(comment);
+  res.json(await Comment.find({ venueId: req.params.venueId }).sort({ createdAt: -1 }));
 });
 
 // Add a new comments
@@ -342,6 +323,45 @@ app.delete('/api/admin/users/:id', async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
+app.put('/api/admin/users/:id', async (req, res) => {
+  const { username, password, role } = req.body;
+
+  if (!username) {
+    return res.status(400).json({ message: 'Username is required' });
+  }
+
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if new username is taken by someone else
+    if (username !== user.username) {
+      const existing = await User.findOne({ username });
+      if (existing) {
+        return res.status(400).json({ message: 'Username already taken' });
+      }
+    }
+
+    // Update fields
+    user.username = username;
+    user.role = role || user.role;
+
+    // Only update password if provided
+    if (password) {
+      user.password = password; // this will be hashed by your pre-save hook
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(user._id).select('-password');
+    res.json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to update user' });
+  }
+});
 
 let currentTime = new Date(Date.now());
 app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }));
@@ -349,7 +369,4 @@ app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }
 // Start server
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
-  // console.log('Run once: http://localhost:5000/seed');
-  seedDatabase();
 });
-
