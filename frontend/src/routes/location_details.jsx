@@ -89,16 +89,29 @@ export default function LocationDetail() {
           {(venue.events || []).length ? (
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {(venue.events || []).map((e) => (
-                <li key={e._id} style={{ 
-                  marginBottom: '15px', 
-                  padding: '15px', 
-                  backgroundColor: 'var(--card-bg)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
+                <li 
+                  key={e._id} 
+                  style={{ 
+                    marginBottom: '15px', 
+                    padding: '15px', 
+                    backgroundColor: 'var(--card-bg)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    transition: 'background-color 0.2s ease, box-shadow 0.2s ease',  // ← Smooth hover transition
+                    cursor: 'pointer',  // Optional: indicates it's interactive
+                  }}
+                  onMouseEnter={(ev) => {
+                    ev.currentTarget.style.backgroundColor = '#f5f5f5';  // Light grey on hover (light mode)
+                    ev.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+                  }}
+                  onMouseLeave={(ev) => {
+                    ev.currentTarget.style.backgroundColor = 'var(--card-bg)';  // Back to original
+                    ev.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
                   <div>
                     <strong style={{ fontSize: '16px' }}>{e.titleEn}</strong>
                     <div style={{ color: 'var(--text-color)', opacity: 0.8, marginTop: '5px' }}>
@@ -110,7 +123,6 @@ export default function LocationDetail() {
                       </div>
                     )}
                   </div>
-                
                 </li>
               ))}
             </ul>
