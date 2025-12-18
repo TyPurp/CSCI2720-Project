@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const fetchVenueData = require('./modules/fetchVenueData');
+
 const app = express();
 
 // Allow all frontend (no cors package needed)
@@ -45,7 +47,7 @@ const eventSchema = new mongoose.Schema({
   venueName: { type: String, required: true },
   dateTime: { type: String, required: true },
   description: String,
-  presenterEn: { type: String, required: true }
+  presenterEn: { type: String, required: false }
 });
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
 
@@ -199,13 +201,16 @@ async function seedDatabase() {
       { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
     ]);
 
-    for (const v of seedData.venues) {
+    const venueData = await fetchVenueData() || seedData;
+
+    for (const v of venueData.venues) {
       await new Venue(v).save();
       for (const e of v.events) {
         await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
       }
     }
 
+  console.log('Database seeded');
 
 }
 // ONE-TIME SEED ROUTE: reset all database into original
@@ -240,7 +245,10 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/api/venues', async (req, res) => {
-  const venues = await Venue.find();
+  const limit = parseInt(req.query.limit) || 10;
+  const offset = parseInt(req.query.offset) || 0;
+
+  const venues = await Venue.find().skip(offset).limit(limit);
   const counts = await Event.aggregate([{ $group: { _id: '$venueId', count: { $sum: 1 } } }]);
   const countMap = Object.fromEntries(counts.map(c => [c._id, c.count]));
   const result = venues.map(v => ({ ...v.toObject(), eventCount: countMap[v.venueId] || 0 }));
