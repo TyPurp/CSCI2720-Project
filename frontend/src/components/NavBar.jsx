@@ -103,7 +103,7 @@ export default function NavBar({ children }) {
           <Link to="/locations" style={logoStyle}>Cultural Programme</Link>
           <div style={linksStyle}>
             <Link to="/locations" style={linkStyle}>Locations</Link>
-            <Link to="/event-list" style={linkStyle}>Event</Link>
+            <Link to="/event-list" style={linkStyle}>Events</Link>
             <Link to="/map" style={linkStyle}>Map</Link>
             <Link to="/favourites" style={linkStyle}>Favourites</Link>
           </div>
@@ -134,7 +134,7 @@ export default function NavBar({ children }) {
             <Link to="/admin/events" style={linkStyle}>Manage Events</Link>
             <Link to="/admin/users" style={linkStyle}>Manage Users</Link>
             <Link to="/locations" style={linkStyle}>Locations</Link>
-            <Link to="/event-list" style={linkStyle}>Event</Link>
+            <Link to="/event-list" style={linkStyle}>Events</Link>
             <Link to="/map" style={linkStyle}>Map</Link>
             <Link to="/favourites" style={linkStyle}>Favourites</Link>
           </div>
@@ -162,7 +162,7 @@ export default function NavBar({ children }) {
         <Link to="/login" style={logoStyle}>Cultural Programme</Link>
         <div style={linksStyle}>
           <Link to="/locations" style={linkStyle}>Locations</Link>
-          <Link to="/event-list" style={linkStyle}>Event List</Link>
+          <Link to="/event-list" style={linkStyle}>Events</Link>
           <Link to="/map" style={linkStyle}>Map</Link>
         </div>
         <div style={userActionsStyle}>
