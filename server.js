@@ -66,22 +66,22 @@ const seedData = {
   venues: [
     { 
         venueId: "35510044", 
-        nameEn: "Kwai Tsing Theatre Auditorium", 
-        latitude: 22.3678, longitude: 114.1342, 
-        addressEn: "12 Hing Ning Road, Kwai Chung", 
-        district: "Kwai Tsing", 
+        nameEn: "Tai Po Civic Centre", 
+        latitude: 22.45175, longitude: 114.16815, 
+        addressEn: "12 On Pong Road", 
+        district: "Tai Po", 
         events: [
-            {titleEn:"Plastic Island",dateTime:"30-31 Jan 2026",presenterEn:"Free-To-Play"},
-            {titleEn:"Mask Theatre",dateTime:"1 Feb 2026",presenterEn:"LCSD"},
-            {titleEn:"Family Comedy",dateTime:"Feb 2026",presenterEn:"Local Group"}
+            {titleEn:"Non-verbal full mask theatre Plastic Island",dateTime:"30-31 Jan 2026",presenterEn:"Free-To-Play"},
+            {titleEn:"Tai Po Civic Centre Fun Day: Toolbox Percussion Demonstration Performance and Workshop",dateTime:"10 Jan 2026",presenterEn:"PVO(NTE) - MDA"},
+            {titleEn:"Tai Po Civic Centre Celebration Programme: The Salvation Army Tai Po Integrated Service for Young People — Busking Performance",dateTime:"17 Jan 2026",presenterEn:"PVO(NTE) - MDA"}
         ] 
     },
     { 
         venueId: "87810041", 
-        nameEn: "Yuen Long Theatre Auditorium", 
-        latitude: 22.4450, longitude: 114.0270, 
-        addressEn: "9 Yuen Long Tai Yuk Road", 
-        district: "Yuen Long", 
+        nameEn: "Sheung Wan Civic Centre", 
+        latitude: 22.28602 , longitude: 114.14967, 
+        addressEn: "345 Queen' s Road Central,", 
+        district: "Hong Kong", 
         events: [
             {titleEn:"Christmas Concert 2025",dateTime:"20 Dec 2025",presenterEn:"Cozy Chamber Choir"},
             {titleEn:"NHKP Youth String Orchestra Christmas Concert",dateTime:"21 Dec 2025",presenterEn:"New Hong Kong Philharmonia"},
@@ -89,107 +89,109 @@ const seedData = {
         ] 
     },
     { 
-        venueId: "50110014", 
+        venueId: "87510305", 
         nameEn: "Hong Kong City Hall Concert Hall", 
-        latitude: 22.2828, longitude: 114.1614, 
+        latitude: 22.282279, longitude: 114.161545, 
         addressEn: "5 Edinburgh Place, Central", 
         district: "Central", 
         events: [
-            {titleEn:"Handel’s Messiah",dateTime:"14 Dec 2025",presenterEn:"Oratorio Society"},
-            {titleEn:"Christmas Concert",dateTime:"Dec 2025",presenterEn:"Philharmonic"},
-            {titleEn:"New Year Gala",dateTime:"1 Jan 2026",presenterEn:"LCSD"}
+            {titleEn:"Chinese Painting and Calligraphy Exhibition",dateTime:"26-29 Dec 2025",presenterEn:"Association of Hong Kong Women Artists in Chinese Painting and Calligraphy"},
+            {titleEn:"Chinese Painting and Calligraphy Exhibition",dateTime:"26-29 Jan 2026",presenterEn:"Bai Yun Tang Art Associatio"},
+            {titleEn:"Exhibition by Hong Kong Fenghua Production",dateTime:"5-8 Jan 2026",presenterEn:"Hong Kong Fenghua Production"}
         ] 
     },
     { 
-        venueId: "826817417", 
+        venueId: "50110015", 
         nameEn: "HK Cultural Centre Grand Theatre", 
-        latitude: 22.2934, longitude: 114.1700, 
-        addressEn: "10 Salisbury Road, TST", 
+        latitude: 22.29386, longitude: 114.17053, 
+        addressEn: "10 Salisbury Road, Tsim Sha Tsui", 
         district: "Yau Tsim Mong", 
         events: [
-            {titleEn:"Storyville Mosquito",dateTime:"6-7 Feb 2026",presenterEn:"Kid Koala"},
-            {titleEn:"Puppet Festival",dateTime:"Feb 2026",presenterEn:"LCSD"},
-            {titleEn:"Multi-media Show",dateTime:"Jan 2026",presenterEn:"International"}
+            {titleEn:"National Ballet of China Giselle",dateTime:"20-21 Jan 2026",presenterEn:"China Performing Arts Agency"},
+            {titleEn:"Gala Dance Performance 2026",dateTime:"9-11 Jan 2026",presenterEn:"Tangya Dancing"},
+            {titleEn:"National Ballet of China Chinese New Year",dateTime:"20-21 Jan 2026",presenterEn:"China Performing Arts Agency"}
         ] 
     },
     { 
         venueId: "76810048", 
-        nameEn: "Sha Tin Town Hall Activities Hall", 
-        latitude: 22.3780, longitude: 114.1890, 
-        addressEn: "1 Yuen Wo Road, Sha Tin", 
-        district: "Sha Tin", 
-        events: [
-            {titleEn:"YOAH by Cirquework",dateTime:"23-25 Jan 2026",presenterEn:"Japan"},
-            {titleEn:"Backstage Tour",dateTime:"Jan 2026",presenterEn:"LCSD"},
-            {titleEn:"Circus Night",dateTime:"Jan 2026",presenterEn:"Arts"}
-        ] 
-    },
-    { 
-        venueId: "87310051", 
         nameEn: "Tuen Mun Town Hall Auditorium", 
-        latitude: 22.3908, 
-        longitude: 113.9764, 
-        addressEn: "3 Tuen Hi Road, Tuen Mun",
+        latitude: 22.391810, longitude: 113.976771, 
+        addressEn: "3 Tuen Hi Road, Tuen Mun", 
         district: "Tuen Mun", 
         events: [
-            {titleEn:"Dance Competition",dateTime:"15-16 Dec 2025",presenterEn:"District"},
-            {titleEn:"Youth Dance",dateTime:"Dec 2025",presenterEn:"LCSD"},
-            {titleEn:"School Final",dateTime:"Dec 2025",presenterEn:"Education"}
+            {titleEn:"Tuen Mun District Dance Competition",dateTime:"9 Jan 2026",presenterEn:"Tuen Mun Arts Promotion Association"},
+            {titleEn:"Tuen Mun North East Area Committee Variety Show",dateTime:"15 Jan 2026",presenterEn:"Tuen Mun District Office, Home Affairs Department"},
+            {titleEn:"Tuen Mun Town Hall Venue Partnership Scheme : Umbrella Story", dateTime:"19-20 Dec 2026",presenterEn:"Arts"}
         ] 
     },
     { 
-        venueId: "87410028", 
+        venueId: "8268", 
+        nameEn: "East Kowloon Cultural Centre", 
+        latitude: 22.32427, 
+        longitude: 114.21494, 
+        addressEn: "60 Ngau Tau Kok Road",
+        district: "Hong Kong", 
+        events: [
+            {titleEn:"Bon Cinéppétit!: Enrichment programme for Food for Thought – A Cinematic Feast",dateTime:"16 Dec 2025 - 18 Jan 2026",presenterEn:"Leisure and Cultural Services Department"},
+            {titleEn:"EKCC Opening Season: Incremental Changes by Gerald Peter X Aaron Thier (Austria)",dateTime:"18-19 Dec 2025",presenterEn:"Leisure and Cultural Services Department"},
+            {titleEn:"EKCC Opening Season: Just Kid-ing",dateTime:"26 Nov - 19 Dec 2025",presenterEn:"Leisure and Cultural Services Department"},
+            {titleEn:"EKCC Opening Season: Passage of Abundance",dateTime:"06 Oct 2025 - 05 Jan 2026",presenterEn:"Leisure and Cultural Services Department"}
+          ] 
+    },
+    { 
+        venueId: "3110267", 
         nameEn: "North District Town Hall Auditorium", 
-        latitude: 22.4960, 
-        longitude: 114.1410, 
+        latitude: 22.501639, 
+        longitude: 114.128911, 
         addressEn: "2 Lung Wan Street, Sheung Shui", 
         district: "North", 
         events: [
-            {titleEn:"Youth Theatre Show",dateTime:"26-28 Dec 2025",presenterEn:"Youth Group"},
-            {titleEn:"Teen Drama",dateTime:"Dec 2025",presenterEn:"Local"},
-            {titleEn:"Anniversary",dateTime:"2025",presenterEn:"CFSC"}
+            {titleEn:"Cantonese Opera Excerpts mixed with Cantonese Operatic Songs Concert",dateTime:"4 Jan 2025",presenterEn:"Kwan Sing Cantonese Operatic Society"},
+            {titleEn:"Cantonese Operatic Songs Concert",dateTime:"13 Dec 2025",presenterEn:"Nice Songs Association"},
+            {titleEn:"Oldies Concer",dateTime:"14 Jan 2026",presenterEn:"Hey Man Bobby Singing & Dancing Group"}
         ] 
     },
     { 
-        venueId: "76810050", 
+        venueId: "36310037", 
         nameEn: "Sha Tin Town Hall Exhibition Gallery", 
-        latitude: 22.3780, 
-        longitude: 114.1890, 
+        latitude: 22.38136, 
+        longitude: 114.18990, 
         addressEn: "1 Yuen Wo Road, Sha Tin", 
         district: "Sha Tin", 
         events: [
-            {titleEn:"Chinese Painting",dateTime:"4-10 Jan 2026",presenterEn:"Association"},
-            {titleEn:"Ink Art",dateTime:"Jan 2026",presenterEn:"Artists"},
-            {titleEn:"Calligraphy",dateTime:"Jan 2026",presenterEn:"Sha Tin"}
+            {titleEn:"Porcelain Art Exhibitio",dateTime:"20-24 Jan 2026",presenterEn:"Association"},
+            {titleEn:"The Eighth of Endless Enthusiasm Painting Exhibition",dateTime:"1,3 Jan 2026",presenterEn:"Art Field"},
+            {titleEn:"Shatin Drama Contest 2025/26",dateTime:"29-31 Jan 2026",presenterEn:"Sha Tin Arts Association"}
         ] 
     },
     { 
-        venueId: "87030035", 
-        nameEn: "Tsuen Wan Town Hall Auditorium", 
-        latitude: 22.3718, longitude: 114.1160, 
-        addressEn: "72 Tai Ho Road, Tsuen Wan", 
-        district: "Tsuen Wan", 
+        venueId: "87610118", 
+        nameEn: "Ko Shan Theatre", 
+        latitude: 22.31368, longitude: 114.18556, 
+        addressEn: "77 Ko Shan Road, Hung Hom", 
+        district: "Kowloon", 
         events: [
-            {titleEn:"Arts Festival",dateTime:"Jan 2026",presenterEn:"LCSD"},
-            {titleEn:"Cantonese Opera",dateTime:"Jan 2026",presenterEn:"Troupe"},
-            {titleEn:"Community Dance",dateTime:"Jan 2026",presenterEn:"Local"}
+            {titleEn:"37th Kowloon City District Joint School Concert",dateTime:"20 Dec 2025",presenterEn:"Kowloon City District Children's Chorus"},
+            {titleEn:"A Showcase of Guangdong, Hong Kong and Macao Cantonese Opera New Stars 2025",dateTime:"09 Dec 2025",presenterEn:"Guangdong Provincial Department of Culture and Tourism, Culture, Sports and Tourism Bureau of the Hong Kong Special Administrative Region Government, Cultural Affairs Bureau of the Macao Special Administrative Region Government"},
+            {titleEn:"Cantonese Opera",dateTime:"24 Dec 2025",presenterEn:"Wai Yuet Cantpnese Opera Society"}
         ] 
     },
     { 
-        venueId: "87810042", 
-        nameEn: "Yuen Long Theatre Lecture Room", 
-        latitude: 22.4450, 
-        longitude: 114.0270, 
-        addressEn: "9 Yuen Long Tai Yuk Road", 
-        district: "Yuen Long", 
+        venueId: "87410030", 
+        nameEn: "Ngau Chi Wan Civic Centre Cultural Activities Hall", 
+        latitude: 22.334583, 
+        longitude: 114.208766, 
+        addressEn: "11 Clear Water Bay Road", 
+        district: "Kowloon", 
         events: [
-            {titleEn:"Ethnic Dance",dateTime:"10 Jan 2026",presenterEn:"Dance Group"},
-            {titleEn:"Cantonese Music",dateTime:"31 Jan 2026",presenterEn:"Opera"},
-            {titleEn:"Cultural Show",dateTime:"Jan 2026",presenterEn:"Community"}
+            {titleEn:"Drama Performance",dateTime:"12-14 Jan 2026",presenterEn:"Singingholic"},
+            {titleEn:"Liyuan Children's Cantonese Opera Presents Filial Piey",dateTime:"31 Jan 2026",presenterEn:"Y&SY Charitable Foundation Limited"},
+            {titleEn:"Pop Legend Choral Concert",dateTime:"29 Jan 2026",presenterEn:"Bagatelle"}
         ] 
     }
   ]
 };
+
 async function seedDatabase() {
   await Venue.deleteMany({});
   await Event.deleteMany({});
