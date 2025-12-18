@@ -211,7 +211,7 @@ async function seedDatabase() {
 
   console.log('Database seeded');
 }
-)
+
 // ONE-TIME SEED ROUTE: reset all database into original
 app.get('/seed', async (req, res) => {
   try {
