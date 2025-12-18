@@ -7,7 +7,6 @@ import Map from "../components/Map";
 import CommentsSection from "../components/CommentSection";
 import useAuth from "../hooks/useAuth";
 import NavBar from "../components/NavBar";
-import LikeButton from "../components/LikeButton";
 
 export default function LocationDetail() {
   const { id } = useParams();
@@ -111,7 +110,7 @@ export default function LocationDetail() {
                       </div>
                     )}
                   </div>
-                  <LikeButton eventId={e._id} initialLikeCount={e.likeCount || 0} />
+                
                 </li>
               ))}
             </ul>
