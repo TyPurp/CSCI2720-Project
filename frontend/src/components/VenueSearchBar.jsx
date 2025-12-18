@@ -3,10 +3,8 @@ import useLocations from '../hooks/useLocations';
 import styles from './styles';
 
 export default function VenueSearchBar({ filters, setFilters }) {
-    
-  const [uniqueAreas, setUniqueAreas] = useState(['All'])
-
-  const {locations} = useLocations();
+  const [uniqueAreas, setUniqueAreas] = useState(['All']);
+  const { locations } = useLocations();
 
   async function fetchAreas() {
     const areasSet = new Set();
@@ -26,24 +24,37 @@ export default function VenueSearchBar({ filters, setFilters }) {
     return () => { cancelled = true; };
   }, [locations]);
 
+  const controlHeight = '52px';
+
   const containerStyle = {
     marginTop: 20,
     marginBottom: 12,
     display: 'flex',
     alignItems: 'center',
-    gap: 12,
-    flexWrap: 'wrap'
+    gap: 16,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',  // ← Even distribution
   };
 
-  const searchBoxStyle = {
+  const controlsWrapperStyle = {
+    display: 'flex',
+    flex: '1 1 600px',                 // Takes available space, min ~600px before wrapping
+    gap: 16,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',     // Evenly space the three filters
+  };
+
+  const commonBoxStyle = {
+    height: controlHeight,
     backgroundColor: 'white',
     borderRadius: 12,
-    padding: '12px 16px',
+    padding: '0 16px',
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    minWidth: 280,
+    border: '1px solid #ccc',
     display: 'flex',
     alignItems: 'center',
-    border: '1px solid #ccc'
+    flex: '1 1 240px',                 // Each filter grows equally, min width 240px
   };
 
   const searchInputStyle = {
@@ -52,17 +63,12 @@ export default function VenueSearchBar({ filters, setFilters }) {
     outline: 'none',
     fontSize: 16,
     width: '100%',
-    color: 'black'
+    color: 'black',
   };
 
   const selectBoxStyle = {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: '12px 16px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    minWidth: 180,
+    ...commonBoxStyle,
     position: 'relative',
-    border: '1px solid #ccc'
   };
 
   const selectStyle = {
@@ -71,28 +77,22 @@ export default function VenueSearchBar({ filters, setFilters }) {
     outline: 'none',
     fontSize: 16,
     width: '100%',
-    appearance: 'none',
-    paddingRight: 24,
+    height: '100%',
+    paddingRight: 30,
     cursor: 'pointer',
-    color: 'black'
+    color: 'black',
+    appearance: 'none',
   };
 
   const distanceBoxStyle = {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: '12px 16px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    display: 'flex',
-    alignItems: 'center',
+    ...commonBoxStyle,
     gap: 12,
-    minWidth: 300,
-    border: '1px solid #ccc'
   };
 
   const distanceTextStyle = {
     fontSize: 16,
     whiteSpace: 'nowrap',
-    color: 'black'
+    color: 'black',
   };
 
   const rangeStyle = {
@@ -102,14 +102,15 @@ export default function VenueSearchBar({ filters, setFilters }) {
     borderRadius: 4,
     outline: 'none',
     appearance: 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
   };
 
   const distanceValueStyle = {
     fontWeight: 'bold',
-    minWidth: 50,
+    minWidth: 60,
     textAlign: 'right',
-    color: 'black'
+    color: 'black',
+    fontSize: 16,
   };
 
   const arrowStyle = {
@@ -119,66 +120,77 @@ export default function VenueSearchBar({ filters, setFilters }) {
     transform: 'translateY(-50%)',
     pointerEvents: 'none',
     fontSize: 20,
-    color: '#666'
+    color: '#666',
   };
 
   const clearButtonStyle = {
     ...styles.button,
-    alignSelf: 'center',
+    height: controlHeight,
     fontSize: 16,
     fontWeight: '500',
     cursor: 'pointer',
     minWidth: 140,
     backgroundColor: 'white',
     color: 'black',
-    border: '1px solid #ccc'
+    border: '1px solid #ccc',
+    padding: '0 24px',
+    borderRadius: 12,
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    alignSelf: 'center',
   };
 
   return (
     <div style={containerStyle}>
-      <div style={searchBoxStyle}>
-        <input
-          type="text"
-          placeholder="Search by location..."
-          value={filters.keyword || ''}
-          onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-          style={searchInputStyle}
-        />
+      {/* Wrapper for the three filters – evenly distributed */}
+      <div style={controlsWrapperStyle}>
+        {/* Search Input */}
+        <div style={commonBoxStyle}>
+          <input
+            type="text"
+            placeholder="Search by location..."
+            value={filters.keyword || ''}
+            onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
+            style={searchInputStyle}
+          />
+        </div>
+
+        {/* District Select */}
+        <div style={selectBoxStyle}>
+          <select
+            value={filters.district || 'All'}
+            onChange={(e) => setFilters({ ...filters, district: e.target.value === 'All' ? '' : e.target.value })}
+            style={selectStyle}
+          >
+            {uniqueAreas.map((a) => (
+              <option key={a} value={a} style={{ color: 'black', backgroundColor: 'white' }}>
+                {a} {a !== 'All' && `(${locations.filter(loc => loc.district === a).length})`}
+              </option>
+            ))}
+          </select>
+          <span style={arrowStyle}>▼</span>
+        </div>
+
+        {/* Distance Slider */}
+        <div style={distanceBoxStyle}>
+          <span style={distanceTextStyle}>Distance (km)</span>
+          <input
+            type="range"
+            min="0"
+            max="70"
+            step="1"
+            value={filters.maxDistance || 0}
+            onChange={(e) => setFilters({ ...filters, maxDistance: e.target.value })}
+            style={rangeStyle}
+          />
+          <span style={distanceValueStyle}>
+            {filters.maxDistance > 0 ? `${filters.maxDistance} km` : 'Any'}
+          </span>
+        </div>
       </div>
 
-      <div style={selectBoxStyle}>
-        <select
-          value={filters.district || 'All'}
-          onChange={(e) => setFilters({ ...filters, district: e.target.value })}
-          style={selectStyle}
-        >
-          {uniqueAreas.map((a) => (
-            <option key={a} value={a} style={{ color: 'black', backgroundColor: 'white' }}>
-              {a} {a !== 'All' && `(${locations.filter(loc => loc.district === a).length})`}
-            </option>
-          ))}
-        </select>
-        <span style={arrowStyle}>▼</span>
-      </div>
-
-      <div style={distanceBoxStyle}>
-        <span style={distanceTextStyle}>Distance (km)</span>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={filters.maxDistance || 0}
-          onChange={(e) => setFilters({ ...filters, maxDistance: e.target.value })}
-          style={rangeStyle}
-        />
-        <span style={distanceValueStyle}>
-          {filters.maxDistance > 0 ? `${filters.maxDistance} km` : 'Any'}
-        </span>
-      </div>
-
+      {/* Clear button stays on the right */}
       <button
-        onClick={() => setFilters({ keyword: '', district: 'All', maxDistance: '' })}
+        onClick={() => setFilters({ keyword: '', district: '', maxDistance: '' })}
         style={clearButtonStyle}
       >
         Clear Filters

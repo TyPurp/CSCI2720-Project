@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 
-import styles from '../components/styles'; // 导入相同的样式
+import styles from '../components/styles'; 
 import NavBar from '../components/NavBar';
 
 export default function EventList() {
@@ -36,7 +36,7 @@ export default function EventList() {
         if (Array.isArray(data)) {
           setEvents(data);
           
-          // 提取唯一的场地名称
+          
           const venues = ['All'];
           const venueSet = new Set();
           data.forEach(event => {
@@ -62,14 +62,14 @@ export default function EventList() {
     fetchEvents();
   }, []);
 
-  // 确保events是数组
+  
   const safeEvents = Array.isArray(events) ? events : [];
 
-  // Filter events - 更新为使用filters对象
+  // Filter events 
   const filteredEvents = safeEvents.filter(event => {
     if (!event) return false;
     
-    // 关键字搜索
+    
     if (filters.keyword) {
       const kw = filters.keyword.toLowerCase();
       const matches = 
@@ -80,12 +80,12 @@ export default function EventList() {
       if (!matches) return false;
     }
     
-    // 场地过滤
+    
     if (filters.venue !== 'All') {
       if (event.venueName !== filters.venue) return false;
     }
     
-    // 日期过滤
+    
     if (filters.date) {
       if (!event.dateTime || !event.dateTime.toLowerCase().includes(filters.date.toLowerCase())) return false;
     }
@@ -131,7 +131,7 @@ export default function EventList() {
     return sortConfig.order === 'asc' ? ' ↑' : ' ↓';
   };
 
-  // 搜索栏样式 - 与VenueSearchBar保持一致
+  
   const containerStyle = {
     marginTop: 20,
     marginBottom: 12,
@@ -225,17 +225,14 @@ export default function EventList() {
     border: '1px solid #ccc'
   };
 
-  // 添加一个函数来获取或映射venueId
-  // 注意：如果API没有直接提供venueId，你可能需要根据venueName来映射
+  
   const getVenueLink = (event) => {
-    // 如果event有venueId，直接使用
+    
     if (event.venueId) {
       return `/locations/${event.venueId}`;
     }
     
-    // 否则，你可能需要创建一个映射表或使用venueName
-    // 这里我们使用一个简单的映射，或者你可以修改API来提供venueId
-    // 临时方案：使用venueName作为参数，但这不是最佳实践
+    
     return `/locations/name/${encodeURIComponent(event.venueName || '')}`;
   };
 
@@ -267,9 +264,8 @@ export default function EventList() {
   return (
     <div>
       <NavBar>
-        {/* 搜索栏 - 使用与Locations页面相同的样式 */}
+        
         <div style={containerStyle}>
-          {/* 搜索框 */}
           <div style={searchBoxStyle}>
             <input
               type="text"
@@ -280,7 +276,6 @@ export default function EventList() {
             />
           </div>
 
-          {/* 场地选择器 */}
           <div style={selectBoxStyle}>
             <select
               value={filters.venue || 'All'}
@@ -296,7 +291,7 @@ export default function EventList() {
             <span style={arrowStyle}>▼</span>
           </div>
 
-          {/* 日期过滤器 */}
+
           <div style={dateBoxStyle}>
             <input
               type="text"
@@ -307,7 +302,6 @@ export default function EventList() {
             />
           </div>
 
-          {/* 清除按钮 */}
           <button
             onClick={() => setFilters({ keyword: '', venue: 'All', date: '', maxDistance: '' })}
             style={clearButtonStyle}
@@ -359,7 +353,7 @@ export default function EventList() {
               </tr>
             )) : (
               <tr>
-                {/* 注意：colSpan现在是5，因为我们有5列 */}
+
                 <td colSpan="5" style={{ ...styles.td, textAlign: 'center' }}>
                   No events match your filters
                 </td>
@@ -368,7 +362,7 @@ export default function EventList() {
           </tbody>
         </table>
         
-        {/* 额外的调试信息（可选） */}
+
         {sortedEvents.length > 0 && (
           <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
             <p>Showing {sortedEvents.length} of {safeEvents.length} total events</p>
