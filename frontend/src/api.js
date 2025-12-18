@@ -11,8 +11,8 @@ async function fetchJSON(url, opts = {}) {
   return res.json();
 }
 
-export async function fetchVenues() {
-  const url = `${API}/api/venues`;
+export async function fetchVenues(limit=10, offset=0) {
+  const url = `${API}/api/venues?limit=${limit}&offset=${offset}`;
   const data = await fetchJSON(url);
   // Normalize id for frontend convenience:
   return Array.isArray(data) ? data.map(v => ({ ...v, id: v.venueId ?? v._id ?? v.id })) : data;

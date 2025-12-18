@@ -3,7 +3,6 @@ import { getFavourites } from "../api";
 import useAuth from "../hooks/useAuth";
 import styles from "../components/styles";
 import { Link } from "react-router-dom";
-import { MOCK_LOCATIONS } from "../hooks/useLocations";
 import NavBar from "../components/NavBar";
 
 export default function FavouritesPage() {

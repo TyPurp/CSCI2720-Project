@@ -6,7 +6,7 @@ export default function VenueSearchBar({ filters, setFilters }) {
     
   const [uniqueAreas, setUniqueAreas] = useState(['All'])
 
-  const locations = useLocations();
+  const {locations} = useLocations();
 
   async function fetchAreas() { 
     const areasSet = new Set();

@@ -9,7 +9,7 @@ import useGeolocation from '../hooks/useGeolocation';
 export default function MapView() {
   const [sortConfig, setSortConfig] = useState({ field: 'distance', order: 'asc' });
   const [filters, setFilters] = useState({ keyword: '', area: 'All', maxDistance: '' });
-  const locations = useLocations();
+  const {locations} = useLocations();
   const userLocation = useGeolocation();
   const visible = useEvents(locations, filters, sortConfig, userLocation);
 

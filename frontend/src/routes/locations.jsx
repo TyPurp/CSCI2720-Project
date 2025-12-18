@@ -13,7 +13,7 @@ export default function Locations() {
   const userLocation = useGeolocation();
 
   const [sortConfig, setSortConfig] = useState({ field: 'name', order: 'asc' });
-  const locations = useLocations();
+  const {locations} = useLocations();
 
   
   const [filters, setFilters] = useState({ keyword: '', area: 'All', maxDistance: '' });

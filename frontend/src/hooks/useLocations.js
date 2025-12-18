@@ -16,6 +16,8 @@ export const MOCK_LOCATIONS = [
 
 export default function useLocations() {  
   const [locations, setLocations] = useState(MOCK_LOCATIONS);
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
 
   
     // If locationsSource provided (a URL), try to fetch; otherwise use MOCK
@@ -26,7 +28,7 @@ export default function useLocations() {
       if (apiBase) {
         (async () => {
           try {
-            const data = await fetchVenues();
+            const data = await fetchVenues(limit, offset);
             if (!cancelled && Array.isArray(data)) setLocations(data);
           } catch (err) {
             console.warn('Failed to fetch venues from backend, using mock data', err);
@@ -37,5 +39,5 @@ export default function useLocations() {
     }, []);
   
 
-    return locations;
+    return { locations, setLimit, setOffset, limit, offset };
 }
