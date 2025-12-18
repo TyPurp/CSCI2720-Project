@@ -1,3 +1,10 @@
+/*
+CSCI2720 Project:
+Members:
+Chow Ho Yee (1155214324)
+Ho Chi Tung (1155213294)
+Lam Tsz Yi (1155212543)
+ */
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
@@ -105,7 +112,7 @@ export default function NavBar({ children }) {
             <Link to="/locations" style={linkStyle}>Locations</Link>
             <Link to="/event-list" style={linkStyle}>Event</Link>
             <Link to="/map" style={linkStyle}>Map</Link>
-            <Link to="/favourites" style={linkStyle}>Favourites</Link>
+            <Link to="/favourites" style={linkStyle} class="bi bi-bookmarks-fill">Favourites</Link>
           </div>
           <div style={userActionsStyle}>
             <button 

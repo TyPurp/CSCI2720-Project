@@ -1,3 +1,10 @@
+/*
+CSCI2720 Project:
+Members:
+Chow Ho Yee (1155214324)
+Ho Chi Tung (1155213294)
+Lam Tsz Yi (1155212543)
+ */
 import { useState, useEffect } from 'react';
 
 const apiBase = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
