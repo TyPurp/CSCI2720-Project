@@ -2,8 +2,6 @@ import { useMemo } from "react";
 
 // Haversine distance formula (km)
 const calculateDistance = (lat1, lng1, lat2, lng2) => {
-  console.log(lat1, lng1, lat2, lng2);
-
   const toRad = (deg) => (deg * Math.PI) / 180;
   const R = 6371; // Earth radius in km
   const dLat = toRad(lat2 - lat1);
@@ -54,7 +52,10 @@ export default function useEvents(locations, filters, sortConfig, userLocation) 
             if (field === 'distance') {
             aVal = a.distanceKm; bVal = b.distanceKm;
             } else if (field === 'events') {
-            aVal = (a.events || []).length; bVal = (b.events || []).length;
+            aVal = a.eventCount || 0; bVal = b.eventCount || 0;
+            } else if (field === 'name' || field === 'nameEn') {
+            aVal = (a.nameEn || a[field] || '').toString().toLowerCase();
+            bVal = (b.nameEn || b[field] || '').toString().toLowerCase();
             } else {
             aVal = (a[field] || '').toString().toLowerCase();
             bVal = (b[field] || '').toString().toLowerCase();
