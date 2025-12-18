@@ -1,5 +1,4 @@
-// frontend/src/api.js
-const API = process.env.REACT_APP_API_BASE_URL || '';
+const API = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 async function fetchJSON(url, opts = {}) {
   const res = await fetch(url, opts);
@@ -14,12 +13,10 @@ async function fetchJSON(url, opts = {}) {
 export async function fetchVenues(limit=10, offset=0) {
   const url = `${API}/api/venues?limit=${limit}&offset=${offset}`;
   const data = await fetchJSON(url);
-  // Normalize id for frontend convenience:
   return Array.isArray(data) ? data.map(v => ({ ...v, id: v.venueId ?? v._id ?? v.id })) : data;
 }
 
 export async function fetchVenue(venueId) {
-  // Try a direct single-venue endpoint first (if present in backend). If not, request all and find.
   try {
     const res = await fetch(`${API}/api/venues/${venueId}`);
     if (res.ok) {
@@ -59,7 +56,7 @@ export async function getFavourites(username) {
 
   const favIds = Array.isArray(result) ? result.map((v) => v.venueId ?? v._id ?? v.id) : [];
 
-  localStorage.setItem('favourites', JSON.stringify(favIds)); // keep localStorage in sync
+  localStorage.setItem('favourites', JSON.stringify(favIds));
   return result;
 }
 
@@ -100,4 +97,25 @@ export async function toggleFavourite(username, locId) {
     await addFavourite(username, locId);
     return true;
   }
+}
+
+export async function getEventLikes(eventId) {
+  const url = `${API}/api/events/${eventId}/likes`;
+  return fetchJSON(url);
+}
+
+export async function getUserLikeStatus(eventId, username) {
+  if (!username) return { liked: false };
+  const url = `${API}/api/events/${eventId}/likes/${username}`;
+  return fetchJSON(url);
+}
+
+export async function toggleLike(eventId, username, action) {
+  const url = `${API}/api/events/${eventId}/like`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, action })
+  });
+  return res.ok ? res.json() : Promise.reject(new Error('Failed to toggle like'));
 }
