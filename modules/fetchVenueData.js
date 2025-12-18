@@ -64,7 +64,7 @@ async function fetchVenueData() {
     eventsXmlData.events.event.forEach(event => {
         // console.log(event);
         const eventId = event._attributes.id;
-        const titleEn = event.titlee._cdata == "--" ? event.titlee._cdata : event.titlec._cdata;
+        const titleEn = event.titlee._cdata || "";  // Fallback to empty if missing (though it isn't)
         const venueId = event.venueid._cdata;
         const dateTime = event.predateE._cdata;
         const presenterEn = event.presenterorge._cdata || "";

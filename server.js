@@ -61,14 +61,13 @@ const commentSchema = new mongoose.Schema({
 const Comment = mongoose.models.Comment || mongoose.model('Comment', commentSchema);
 
 // SEED DATA (10 venues)
-
 const seedData = {
   venues: [
     { 
         venueId: "35510044", 
         nameEn: "Tai Po Civic Centre", 
         latitude: 22.45175, longitude: 114.16815, 
-        addressEn: "12 On Pong Road", 
+        addressEn: "12 On Pong Road, Tai Po", 
         district: "Tai Po", 
         events: [
             {titleEn:"Non-verbal full mask theatre Plastic Island",dateTime:"30-31 Jan 2026",presenterEn:"Free-To-Play"},
@@ -80,7 +79,7 @@ const seedData = {
         venueId: "87810041", 
         nameEn: "Sheung Wan Civic Centre", 
         latitude: 22.28602 , longitude: 114.14967, 
-        addressEn: "345 Queen' s Road Central,", 
+        addressEn: "345 Queen' s Road Central, Hong Kong", 
         district: "Hong Kong", 
         events: [
             {titleEn:"Christmas Concert 2025",dateTime:"20 Dec 2025",presenterEn:"Cozy Chamber Choir"},
@@ -129,7 +128,7 @@ const seedData = {
         nameEn: "East Kowloon Cultural Centre", 
         latitude: 22.32427, 
         longitude: 114.21494, 
-        addressEn: "60 Ngau Tau Kok Road",
+        addressEn: "60 Ngau Tau Kok Road, Hong Kong",
         district: "Hong Kong", 
         events: [
             {titleEn:"Bon Cinéppétit!: Enrichment programme for Food for Thought – A Cinematic Feast",dateTime:"16 Dec 2025 - 18 Jan 2026",presenterEn:"Leisure and Cultural Services Department"},
@@ -181,7 +180,7 @@ const seedData = {
         nameEn: "Ngau Chi Wan Civic Centre Cultural Activities Hall", 
         latitude: 22.334583, 
         longitude: 114.208766, 
-        addressEn: "11 Clear Water Bay Road", 
+        addressEn: "11 Clear Water Bay Road, Kowloon", 
         district: "Kowloon", 
         events: [
             {titleEn:"Drama Performance",dateTime:"12-14 Jan 2026",presenterEn:"Singingholic"},
