@@ -1,8 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const fetchVenueData = require('./modules/fetchVenueData');
-
 const app = express();
 
 // Allow all frontend (no cors package needed)
@@ -47,7 +45,7 @@ const eventSchema = new mongoose.Schema({
   venueName: { type: String, required: true },
   dateTime: { type: String, required: true },
   description: String,
-  presenterEn: { type: String, required: false }
+  presenterEn: { type: String, required: true }
 });
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema);
 
@@ -61,26 +59,27 @@ const commentSchema = new mongoose.Schema({
 const Comment = mongoose.models.Comment || mongoose.model('Comment', commentSchema);
 
 // SEED DATA (10 venues)
+
 const seedData = {
   venues: [
     { 
         venueId: "35510044", 
-        nameEn: "Tai Po Civic Centre", 
-        latitude: 22.45175, longitude: 114.16815, 
-        addressEn: "12 On Pong Road, Tai Po", 
-        district: "Tai Po", 
+        nameEn: "Kwai Tsing Theatre Auditorium", 
+        latitude: 22.3678, longitude: 114.1342, 
+        addressEn: "12 Hing Ning Road, Kwai Chung", 
+        district: "Kwai Tsing", 
         events: [
-            {titleEn:"Non-verbal full mask theatre Plastic Island",dateTime:"30-31 Jan 2026",presenterEn:"Free-To-Play"},
-            {titleEn:"Tai Po Civic Centre Fun Day: Toolbox Percussion Demonstration Performance and Workshop",dateTime:"10 Jan 2026",presenterEn:"PVO(NTE) - MDA"},
-            {titleEn:"Tai Po Civic Centre Celebration Programme: The Salvation Army Tai Po Integrated Service for Young People — Busking Performance",dateTime:"17 Jan 2026",presenterEn:"PVO(NTE) - MDA"}
+            {titleEn:"Plastic Island",dateTime:"30-31 Jan 2026",presenterEn:"Free-To-Play"},
+            {titleEn:"Mask Theatre",dateTime:"1 Feb 2026",presenterEn:"LCSD"},
+            {titleEn:"Family Comedy",dateTime:"Feb 2026",presenterEn:"Local Group"}
         ] 
     },
     { 
         venueId: "87810041", 
-        nameEn: "Sheung Wan Civic Centre", 
-        latitude: 22.28602 , longitude: 114.14967, 
-        addressEn: "345 Queen' s Road Central, Hong Kong", 
-        district: "Hong Kong", 
+        nameEn: "Yuen Long Theatre Auditorium", 
+        latitude: 22.4450, longitude: 114.0270, 
+        addressEn: "9 Yuen Long Tai Yuk Road", 
+        district: "Yuen Long", 
         events: [
             {titleEn:"Christmas Concert 2025",dateTime:"20 Dec 2025",presenterEn:"Cozy Chamber Choir"},
             {titleEn:"NHKP Youth String Orchestra Christmas Concert",dateTime:"21 Dec 2025",presenterEn:"New Hong Kong Philharmonia"},
@@ -88,137 +87,128 @@ const seedData = {
         ] 
     },
     { 
-        venueId: "87510305", 
+        venueId: "50110014", 
         nameEn: "Hong Kong City Hall Concert Hall", 
-        latitude: 22.282279, longitude: 114.161545, 
+        latitude: 22.2828, longitude: 114.1614, 
         addressEn: "5 Edinburgh Place, Central", 
         district: "Central", 
         events: [
-            {titleEn:"Chinese Painting and Calligraphy Exhibition",dateTime:"26-29 Dec 2025",presenterEn:"Association of Hong Kong Women Artists in Chinese Painting and Calligraphy"},
-            {titleEn:"Chinese Painting and Calligraphy Exhibition",dateTime:"26-29 Jan 2026",presenterEn:"Bai Yun Tang Art Associatio"},
-            {titleEn:"Exhibition by Hong Kong Fenghua Production",dateTime:"5-8 Jan 2026",presenterEn:"Hong Kong Fenghua Production"}
+            {titleEn:"Handel’s Messiah",dateTime:"14 Dec 2025",presenterEn:"Oratorio Society"},
+            {titleEn:"Christmas Concert",dateTime:"Dec 2025",presenterEn:"Philharmonic"},
+            {titleEn:"New Year Gala",dateTime:"1 Jan 2026",presenterEn:"LCSD"}
         ] 
     },
     { 
-        venueId: "50110015", 
+        venueId: "826817417", 
         nameEn: "HK Cultural Centre Grand Theatre", 
-        latitude: 22.29386, longitude: 114.17053, 
-        addressEn: "10 Salisbury Road, Tsim Sha Tsui", 
+        latitude: 22.2934, longitude: 114.1700, 
+        addressEn: "10 Salisbury Road, TST", 
         district: "Yau Tsim Mong", 
         events: [
-            {titleEn:"National Ballet of China Giselle",dateTime:"20-21 Jan 2026",presenterEn:"China Performing Arts Agency"},
-            {titleEn:"Gala Dance Performance 2026",dateTime:"9-11 Jan 2026",presenterEn:"Tangya Dancing"},
-            {titleEn:"National Ballet of China Chinese New Year",dateTime:"20-21 Jan 2026",presenterEn:"China Performing Arts Agency"}
+            {titleEn:"Storyville Mosquito",dateTime:"6-7 Feb 2026",presenterEn:"Kid Koala"},
+            {titleEn:"Puppet Festival",dateTime:"Feb 2026",presenterEn:"LCSD"},
+            {titleEn:"Multi-media Show",dateTime:"Jan 2026",presenterEn:"International"}
         ] 
     },
     { 
         venueId: "76810048", 
-        nameEn: "Tuen Mun Town Hall Auditorium", 
-        latitude: 22.391810, longitude: 113.976771, 
-        addressEn: "3 Tuen Hi Road, Tuen Mun", 
-        district: "Tuen Mun", 
-        events: [
-            {titleEn:"Tuen Mun District Dance Competition",dateTime:"9 Jan 2026",presenterEn:"Tuen Mun Arts Promotion Association"},
-            {titleEn:"Tuen Mun North East Area Committee Variety Show",dateTime:"15 Jan 2026",presenterEn:"Tuen Mun District Office, Home Affairs Department"},
-            {titleEn:"Tuen Mun Town Hall Venue Partnership Scheme : Umbrella Story", dateTime:"19-20 Dec 2026",presenterEn:"Arts"}
-        ] 
-    },
-    { 
-        venueId: "8268", 
-        nameEn: "East Kowloon Cultural Centre", 
-        latitude: 22.32427, 
-        longitude: 114.21494, 
-        addressEn: "60 Ngau Tau Kok Road, Hong Kong",
-        district: "Hong Kong", 
-        events: [
-            {titleEn:"Bon Cinéppétit!: Enrichment programme for Food for Thought – A Cinematic Feast",dateTime:"16 Dec 2025 - 18 Jan 2026",presenterEn:"Leisure and Cultural Services Department"},
-            {titleEn:"EKCC Opening Season: Incremental Changes by Gerald Peter X Aaron Thier (Austria)",dateTime:"18-19 Dec 2025",presenterEn:"Leisure and Cultural Services Department"},
-            {titleEn:"EKCC Opening Season: Just Kid-ing",dateTime:"26 Nov - 19 Dec 2025",presenterEn:"Leisure and Cultural Services Department"},
-            {titleEn:"EKCC Opening Season: Passage of Abundance",dateTime:"06 Oct 2025 - 05 Jan 2026",presenterEn:"Leisure and Cultural Services Department"}
-          ] 
-    },
-    { 
-        venueId: "3110267", 
-        nameEn: "North District Town Hall Auditorium", 
-        latitude: 22.501639, 
-        longitude: 114.128911, 
-        addressEn: "2 Lung Wan Street, Sheung Shui", 
-        district: "North", 
-        events: [
-            {titleEn:"Cantonese Opera Excerpts mixed with Cantonese Operatic Songs Concert",dateTime:"4 Jan 2025",presenterEn:"Kwan Sing Cantonese Operatic Society"},
-            {titleEn:"Cantonese Operatic Songs Concert",dateTime:"13 Dec 2025",presenterEn:"Nice Songs Association"},
-            {titleEn:"Oldies Concer",dateTime:"14 Jan 2026",presenterEn:"Hey Man Bobby Singing & Dancing Group"}
-        ] 
-    },
-    { 
-        venueId: "36310037", 
-        nameEn: "Sha Tin Town Hall Exhibition Gallery", 
-        latitude: 22.38136, 
-        longitude: 114.18990, 
+        nameEn: "Sha Tin Town Hall Activities Hall", 
+        latitude: 22.3780, longitude: 114.1890, 
         addressEn: "1 Yuen Wo Road, Sha Tin", 
         district: "Sha Tin", 
         events: [
-            {titleEn:"Porcelain Art Exhibitio",dateTime:"20-24 Jan 2026",presenterEn:"Association"},
-            {titleEn:"The Eighth of Endless Enthusiasm Painting Exhibition",dateTime:"1,3 Jan 2026",presenterEn:"Art Field"},
-            {titleEn:"Shatin Drama Contest 2025/26",dateTime:"29-31 Jan 2026",presenterEn:"Sha Tin Arts Association"}
+            {titleEn:"YOAH by Cirquework",dateTime:"23-25 Jan 2026",presenterEn:"Japan"},
+            {titleEn:"Backstage Tour",dateTime:"Jan 2026",presenterEn:"LCSD"},
+            {titleEn:"Circus Night",dateTime:"Jan 2026",presenterEn:"Arts"}
         ] 
     },
     { 
-        venueId: "87610118", 
-        nameEn: "Ko Shan Theatre", 
-        latitude: 22.31368, longitude: 114.18556, 
-        addressEn: "77 Ko Shan Road, Hung Hom", 
-        district: "Kowloon", 
+        venueId: "87310051", 
+        nameEn: "Tuen Mun Town Hall Auditorium", 
+        latitude: 22.3908, 
+        longitude: 113.9764, 
+        addressEn: "3 Tuen Hi Road, Tuen Mun",
+        district: "Tuen Mun", 
         events: [
-            {titleEn:"37th Kowloon City District Joint School Concert",dateTime:"20 Dec 2025",presenterEn:"Kowloon City District Children's Chorus"},
-            {titleEn:"A Showcase of Guangdong, Hong Kong and Macao Cantonese Opera New Stars 2025",dateTime:"09 Dec 2025",presenterEn:"Guangdong Provincial Department of Culture and Tourism, Culture, Sports and Tourism Bureau of the Hong Kong Special Administrative Region Government, Cultural Affairs Bureau of the Macao Special Administrative Region Government"},
-            {titleEn:"Cantonese Opera",dateTime:"24 Dec 2025",presenterEn:"Wai Yuet Cantpnese Opera Society"}
+            {titleEn:"Dance Competition",dateTime:"15-16 Dec 2025",presenterEn:"District"},
+            {titleEn:"Youth Dance",dateTime:"Dec 2025",presenterEn:"LCSD"},
+            {titleEn:"School Final",dateTime:"Dec 2025",presenterEn:"Education"}
         ] 
     },
     { 
-        venueId: "87410030", 
-        nameEn: "Ngau Chi Wan Civic Centre Cultural Activities Hall", 
-        latitude: 22.334583, 
-        longitude: 114.208766, 
-        addressEn: "11 Clear Water Bay Road, Kowloon", 
-        district: "Kowloon", 
+        venueId: "87410028", 
+        nameEn: "North District Town Hall Auditorium", 
+        latitude: 22.4960, 
+        longitude: 114.1410, 
+        addressEn: "2 Lung Wan Street, Sheung Shui", 
+        district: "North", 
         events: [
-            {titleEn:"Drama Performance",dateTime:"12-14 Jan 2026",presenterEn:"Singingholic"},
-            {titleEn:"Liyuan Children's Cantonese Opera Presents Filial Piey",dateTime:"31 Jan 2026",presenterEn:"Y&SY Charitable Foundation Limited"},
-            {titleEn:"Pop Legend Choral Concert",dateTime:"29 Jan 2026",presenterEn:"Bagatelle"}
+            {titleEn:"Youth Theatre Show",dateTime:"26-28 Dec 2025",presenterEn:"Youth Group"},
+            {titleEn:"Teen Drama",dateTime:"Dec 2025",presenterEn:"Local"},
+            {titleEn:"Anniversary",dateTime:"2025",presenterEn:"CFSC"}
+        ] 
+    },
+    { 
+        venueId: "76810050", 
+        nameEn: "Sha Tin Town Hall Exhibition Gallery", 
+        latitude: 22.3780, 
+        longitude: 114.1890, 
+        addressEn: "1 Yuen Wo Road, Sha Tin", 
+        district: "Sha Tin", 
+        events: [
+            {titleEn:"Chinese Painting",dateTime:"4-10 Jan 2026",presenterEn:"Association"},
+            {titleEn:"Ink Art",dateTime:"Jan 2026",presenterEn:"Artists"},
+            {titleEn:"Calligraphy",dateTime:"Jan 2026",presenterEn:"Sha Tin"}
+        ] 
+    },
+    { 
+        venueId: "87030035", 
+        nameEn: "Tsuen Wan Town Hall Auditorium", 
+        latitude: 22.3718, longitude: 114.1160, 
+        addressEn: "72 Tai Ho Road, Tsuen Wan", 
+        district: "Tsuen Wan", 
+        events: [
+            {titleEn:"Arts Festival",dateTime:"Jan 2026",presenterEn:"LCSD"},
+            {titleEn:"Cantonese Opera",dateTime:"Jan 2026",presenterEn:"Troupe"},
+            {titleEn:"Community Dance",dateTime:"Jan 2026",presenterEn:"Local"}
+        ] 
+    },
+    { 
+        venueId: "87810042", 
+        nameEn: "Yuen Long Theatre Lecture Room", 
+        latitude: 22.4450, 
+        longitude: 114.0270, 
+        addressEn: "9 Yuen Long Tai Yuk Road", 
+        district: "Yuen Long", 
+        events: [
+            {titleEn:"Ethnic Dance",dateTime:"10 Jan 2026",presenterEn:"Dance Group"},
+            {titleEn:"Cantonese Music",dateTime:"31 Jan 2026",presenterEn:"Opera"},
+            {titleEn:"Cultural Show",dateTime:"Jan 2026",presenterEn:"Community"}
         ] 
     }
   ]
 };
 
-async function seedDatabase() {
-  await Venue.deleteMany({});
-  await Event.deleteMany({});
-  await User.deleteMany({});
-  
-  await User.create([
-    { username: 'user', password: '123456', role: 'user', favourites: [] },
-    { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
-  ]);
-  
-  console.log("Loading venue data...");
-  const venueData = await fetchVenueData() || seedData;
-
-  for (const v of venueData.venues) {
-    await new Venue(v).save();
-    for (const e of v.events) {
-      await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
-    }
-  }
-
-  console.log('Database seeded');
-}
-
-// ONE-TIME SEED ROUTE: reset all database into original
+// ONE-TIME SEED ROUTE: reset all database(event, venue and user) into original
 app.get('/seed', async (req, res) => {
   try {
     // await mongoose.connection.db.dropDatabase();
-    await seedDatabase();
+    await Venue.deleteMany({});
+    await Event.deleteMany({});
+    await User.deleteMany({});
+
+    for (const v of seedData.venues) {
+      await new Venue(v).save();
+      for (const e of v.events) {
+        await new Event({ ...e, venueId: v.venueId, venueName: v.nameEn }).save();
+      }
+    }
+
+    await User.create([
+      { username: 'user', password: '123456', role: 'user', favourites: [] },
+      { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
+    ]);
+
     res.send('<h1>SEED SUCCESSFUL!</h1><p>10 venues + events + accounts ready<br>Last updated: 2025-12-09</p>');
   } catch (err) {
     res.status(500).send(err.message);
@@ -235,17 +225,83 @@ app.post('/api/login', async (req, res) => {
 });
 
 app.get('/api/venues', async (req, res) => {
-  const limit = parseInt(req.query.limit) || 10;
-  const offset = parseInt(req.query.offset) || 0;
-
-  const venues = await Venue.find().skip(offset).limit(limit);
+  const venues = await Venue.find();
   const counts = await Event.aggregate([{ $group: { _id: '$venueId', count: { $sum: 1 } } }]);
   const countMap = Object.fromEntries(counts.map(c => [c._id, c.count]));
   const result = venues.map(v => ({ ...v.toObject(), eventCount: countMap[v.venueId] || 0 }));
   res.json(result);
 });
 
-// Find particular venueId
+// ===========================================
+// NEW ROUTES FOR EVENT LIST PAGE
+// ===========================================
+
+// 1. Get all events with optional search
+app.get('/api/events', async (req, res) => {
+  try {
+    const { search, venue, date } = req.query;
+    let query = {};
+    
+    // Apply search filter
+    if (search) {
+      query.$or = [
+        { titleEn: { $regex: search, $options: 'i' } },
+        { venueName: { $regex: search, $options: 'i' } },
+        { presenterEn: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Apply venue filter
+    if (venue && venue !== 'All' && venue !== '') {
+      query.venueName = venue;
+    }
+    
+    // Apply date filter (you may need to adjust this based on your dateTime format)
+    if (date) {
+      // Since dateTime is a string like "30-31 Jan 2026", we need to parse it
+      // This is a simple implementation - you might need more complex date parsing
+      query.dateTime = { $regex: date, $options: 'i' };
+    }
+    
+    const events = await Event.find(query).sort({ dateTime: 1 });
+    res.json(events);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
+// 2. Get unique venues for filter dropdown
+app.get('/api/events/venues', async (req, res) => {
+  try {
+    const venues = await Event.distinct('venueName');
+    res.json(venues.sort());
+  } catch (error) {
+    console.error('Error fetching unique venues:', error);
+    res.status(500).json({ error: 'Failed to fetch venues' });
+  }
+});
+
+// 3. Get single event by ID
+app.get('/api/events/id/:id', async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    res.json(event);
+  } catch (error) {
+    console.error('Error fetching event:', error);
+    res.status(500).json({ error: 'Failed to fetch event' });
+  }
+});
+
+// ===========================================
+// EXISTING ROUTES (unchanged)
+// ===========================================
+
+// Find particular venueId events
 app.get('/api/events/:venueId', async (req, res) => {
   res.json(await Event.find({ venueId: req.params.venueId }));
 });
@@ -372,5 +428,3 @@ app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
 });
-
-seedDatabase();
