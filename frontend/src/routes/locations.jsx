@@ -60,7 +60,7 @@ export default function Locations() {
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th} onClick={() => handleSort('name')}>Name {getSortIndicator('name')}</th>
+              <th style={styles.th} onClick={() => handleSort('nameEn')}>Name {getSortIndicator('name')}</th>
               <th style={styles.th} onClick={() => handleSort('distance')}>Distance (km) {getSortIndicator('distance')}</th>
               <th style={styles.th} onClick={() => handleSort('events')}>Events {getSortIndicator('events')}</th>
               <th style={styles.th}>Area</th>
@@ -98,14 +98,14 @@ export default function Locations() {
               style={{
                 padding: '10px 20px',
                 fontSize: '16px',
-                backgroundColor: '#007bff',
+                backgroundColor: '#3f80c5ff',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
               }}
               onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
-              onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#3f80c5ff'}
             >
               {showAll ? 'Show less locations' : 'Show more locations'}
             </button>
