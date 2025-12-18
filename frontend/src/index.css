@@ -77,3 +77,8 @@ body.dark .alert-success {
   border-color: #2d4f3a !important;
   color: #73d13d !important;
 }
+
+body.dark li[style*="transition"]:hover {
+  background-color: #2a2a2a !important;   /* Slightly lighter dark grey on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}

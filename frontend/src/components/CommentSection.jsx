@@ -45,9 +45,20 @@ export default function CommentsSection({ locationId }) {
     setText("");
   };
 
+  // Quick comment presets
+  const quickComments = [
+    "Worth going!",
+    "Great!",
+    "Improvement needed!",
+    "Definitely need to have a try!",
+  ];
+
+  const handleQuickComment = (comment) => {
+    setText(comment);
+  };
+
   return (
     <section style={{ marginTop: 32, fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-      {/* Header */}
       <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20 }}>
         Comments
       </h3>
@@ -93,11 +104,45 @@ export default function CommentsSection({ locationId }) {
           }}
         />
 
+        {/* Quick Comment Buttons */}
+        <div style={{ marginTop: 12, marginBottom: 12, display: "flex", flexWrap: "wrap", gap: 10 }}>
+          {quickComments.map((comment) => (
+            <button
+              key={comment}
+              type="button"
+              onClick={() => handleQuickComment(comment)}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: text === comment ? "#538692ff" : "#f0f0f0",
+                color: text === comment ? "white" : "#333",
+                border: "1px solid #ccc",
+                borderRadius: 20,
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseOver={(e) => {
+                if (text !== comment) {
+                  e.currentTarget.style.backgroundColor = "#e0e0e0";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (text !== comment) {
+                  e.currentTarget.style.backgroundColor = "#f0f0f0";
+                }
+              }}
+            >
+              {comment}
+            </button>
+          ))}
+        </div>
+
+        {/* Post Button */}
         <button
           type="submit"
           disabled={!text.trim()}
           style={{
-            marginTop: 12,
             backgroundColor: text.trim() ? "#538692ff" : "#ccc",
             color: "white",
             border: "none",
@@ -108,8 +153,8 @@ export default function CommentsSection({ locationId }) {
             cursor: text.trim() ? "pointer" : "not-allowed",
             transition: "background-color 0.2s",
           }}
-          onMouseOver={(e) => text.trim() && (e.currentTarget.style.backgroundColor = "#538692ff")}
-          onMouseOut={(e) => text.trim() && (e.currentTarget.style.backgroundColor = "#d4f1f7ff")}
+          onMouseOver={(e) => text.trim() && (e.currentTarget.style.backgroundColor = "#436f79")}
+          onMouseOut={(e) => text.trim() && (e.currentTarget.style.backgroundColor = "#538692ff")}
         >
           Post Comment
         </button>
