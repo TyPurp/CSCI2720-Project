@@ -20,7 +20,7 @@ async function fetchVenueData() {
         return { venueId, nameEn, events, longitude, latitude };
     });
 
-const venues = await Promise.all(
+    var venues = await Promise.all(
         venuesRaw.map(async venue => {
             const { nameEn } = venue;
             let addressEn = "";
@@ -75,6 +75,8 @@ const venues = await Promise.all(
             }
         });
     })
+
+    venues = venues.filter(venue => venue.events.length >= 3);
 
     return { venues };
 

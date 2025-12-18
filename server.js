@@ -199,7 +199,8 @@ async function seedDatabase() {
     { username: 'user', password: '123456', role: 'user', favourites: [] },
     { username: 'admin', password: 'admin123', role: 'admin', favourites: [] }
   ]);
-
+  
+  console.log("Loading venue data...");
   const venueData = await fetchVenueData() || seedData;
 
   for (const v of venueData.venues) {
@@ -370,3 +371,5 @@ app.get('/api/last-updated', (req, res) => res.json({ lastUpdated: currentTime }
 app.listen(5000, () => {
   console.log('Server running at http://localhost:5000');
 });
+
+seedDatabase();
