@@ -439,7 +439,7 @@ export default function EventList() {
             <col style={{ width: '20%' }} /> {/* Title */}
             <col style={{ width: '15%' }} /> {/* Presenter */}
             <col style={{ width: '25%' }} /> {/* Description */}
-            <col style={{ width: '10%' }} /> {/* Likes - fixed width */}
+            <col style={{ width: '10%' }} /> {/* Likes */}
           </colgroup>
           <thead>
             <tr>
@@ -466,7 +466,13 @@ export default function EventList() {
           <tbody>
             {sortedEvents.length ? sortedEvents.map((event) => (
               <tr key={event._id} style={styles.tr}>
-                <td style={{ ...styles.td, width: '15%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <td style={{ 
+                  ...styles.td, 
+                  width: '15%', 
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
                   <Link 
                     to={getVenueLink(event)}
                     style={styles.link}
@@ -474,13 +480,48 @@ export default function EventList() {
                     {event.venueName || 'Unknown Venue'}
                   </Link>
                 </td>
-                <td style={{ ...styles.td, width: '15%' }}>{event.dateTime || 'N/A'}</td>
-                <td style={{ ...styles.td, width: '20%' }}>{event.titleEn || 'Untitled Event'}</td>
-                <td style={{ ...styles.td, width: '15%' }}>{event.presenterEn || 'N/A'}</td>
-                <td style={{ ...styles.td, width: '25%', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <td style={{ 
+                  ...styles.td, 
+                  width: '15%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {event.dateTime || 'N/A'}
+                </td>
+                <td style={{ 
+                  ...styles.td, 
+                  width: '20%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  wordBreak: 'break-word'
+                }}>
+                  {event.titleEn || 'Untitled Event'}
+                </td>
+                <td style={{ 
+                  ...styles.td, 
+                  width: '15%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {event.presenterEn || 'N/A'}
+                </td>
+                <td style={{ 
+                  ...styles.td, 
+                  width: '25%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  wordBreak: 'break-word'
+                }}>
                   {event.description || 'No description'}
                 </td>
-                <td style={{ ...styles.td, textAlign: 'center', padding: '8px', width: '80px' }}>
+                <td style={{ 
+                  ...styles.td, 
+                  textAlign: 'center', 
+                  padding: '8px', 
+                  width: '80px',
+                  whiteSpace: 'nowrap'
+                }}>
                   <button
                     onClick={() => handleLikeToggle(event._id, event.titleEn)}
                     style={{
