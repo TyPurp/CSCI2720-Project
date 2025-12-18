@@ -60,7 +60,7 @@ export default function Locations() {
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th} onClick={() => handleSort('nameEn')}>Name {getSortIndicator('name')}</th>
+              <th style={styles.th} onClick={() => handleSort('nameEn')}>Name {getSortIndicator('nameEn')}</th>
               <th style={styles.th} onClick={() => handleSort('distance')}>Distance (km) {getSortIndicator('distance')}</th>
               <th style={styles.th} onClick={() => handleSort('events')}>Events {getSortIndicator('events')}</th>
               <th style={styles.th}>Area</th>
