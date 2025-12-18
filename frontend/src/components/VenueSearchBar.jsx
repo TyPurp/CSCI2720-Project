@@ -3,8 +3,10 @@ import useLocations from '../hooks/useLocations';
 import styles from './styles';
 
 export default function VenueSearchBar({ filters, setFilters }) {
-  const [uniqueAreas, setUniqueAreas] = useState(['All']);
-  const locations = useLocations();
+    
+  const [uniqueAreas, setUniqueAreas] = useState(['All'])
+
+  const {locations} = useLocations();
 
   async function fetchAreas() {
     const areasSet = new Set();

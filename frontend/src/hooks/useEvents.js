@@ -41,7 +41,7 @@ export default function useEvents(locations, filters, sortConfig, userLocation) 
             result = result.filter((loc) => loc.district === filters.district);
         }
 
-        if (filters.maxDistance !== '' && filters.maxDistance !== null && filters.maxDistance !== undefined) {
+        if (filters.maxDistance !== '' && filters.maxDistance !== null && filters.maxDistance !== undefined && filters.maxDistance > 0) {
             const maxD = Number(filters.maxDistance);
             if (!Number.isNaN(maxD)) {
             result = result.filter((loc) => loc.distanceKm <= maxD);
