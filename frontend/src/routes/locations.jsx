@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import useLocations, { MOCK_LOCATIONS } from '../hooks/useLocations';
+import useLocations from '../hooks/useLocations';
 import useEvents from '../hooks/useEvents';
 import { Link } from 'react-router-dom';
 
@@ -13,14 +13,25 @@ export default function Locations() {
   const userLocation = useGeolocation();
 
   const [sortConfig, setSortConfig] = useState({ field: 'name', order: 'asc' });
-  const {locations} = useLocations();
+  const { locations } = useLocations();
 
-  
   const [filters, setFilters] = useState({ keyword: '', area: 'All', maxDistance: '' });
-  
 
-
+  // Compute the fully filtered & sorted list
   const visible = useEvents(locations, filters, sortConfig, userLocation);
+
+  // Toggle between showing 10 or all
+  const [showAll, setShowAll] = useState(false);
+
+  const displayedLocations = useMemo(() => {
+    return showAll ? visible : visible.slice(0, 10);
+  }, [visible, showAll]);
+
+  const hasMore = visible.length > 10;
+
+  const toggleShowAll = () => {
+    setShowAll(prev => !prev);
+  };
 
   const handleSort = (field) => {
     setSortConfig((prev) => {
@@ -42,7 +53,10 @@ export default function Locations() {
       <div style={{ padding: 20, textAlign: 'left' }}>
 
         <h2>Locations</h2>
-        <p>{visible.length} result(s). Click headers to sort.</p>
+        <p>
+          Showing {displayedLocations.length} of {visible.length} result(s). Click headers to sort.
+        </p>
+
         <table style={styles.table}>
           <thead>
             <tr>
@@ -54,23 +68,50 @@ export default function Locations() {
             </tr>
           </thead>
           <tbody>
-            {visible.length ? visible.map((loc) => (
+            {displayedLocations.length ? displayedLocations.map((loc) => (
               <tr key={loc.id} style={styles.tr}>
                 <td style={styles.td}>{loc.nameEn}</td>
-                <td style={styles.td}>{loc.distanceKm.toFixed(1) > 0 ? loc.distanceKm.toFixed(1) : "Loading..."  }</td>
+                <td style={styles.td}>
+                  {loc.distanceKm.toFixed(1) > 0 ? loc.distanceKm.toFixed(1) : "Loading..."}
+                </td>
                 <td style={styles.td}>{loc.eventCount}</td>
                 <td style={styles.td}>{loc.district}</td>
-                <td style={styles.td}><Link to={`/locations/${loc.id}`} style={styles.link}>View</Link></td>
+                <td style={styles.td}>
+                  <Link to={`/locations/${loc.id}`} style={styles.link}>View</Link>
+                </td>
               </tr>
             )) : (
               <tr>
-                <td colSpan="5" style={{ ...styles.td, textAlign: 'center' }}>No locations match your filters</td>
+                <td colSpan="5" style={{ ...styles.td, textAlign: 'center' }}>
+                  No locations match your filters
+                </td>
               </tr>
             )}
           </tbody>
         </table>
+
+        {/* Toggle Button - only show if there are more than 10 results */}
+        {hasMore && (
+          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+            <button
+              onClick={toggleShowAll}
+              style={{
+                padding: '10px 20px',
+                fontSize: '16px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = '#0056b3'}
+              onMouseOut={(e) => e.target.style.backgroundColor = '#007bff'}
+            >
+              {showAll ? 'Show less locations' : 'Show more locations'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
