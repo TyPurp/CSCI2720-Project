@@ -129,6 +129,8 @@ export default function AdminEvents() {
   if (!user || user.role !== 'admin') return null;
 
   return (
+    <>
+    <NavBar />
     <div style={{ padding: '24px 40px', maxWidth: '1400px', margin: '0 auto', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
       <h1 style={{ fontSize: '28px', marginBottom: '8px', color: '#333' }}>
         Admin Panel — Manage Events
@@ -305,5 +307,6 @@ export default function AdminEvents() {
         </div>
       )}
     </div>
+    </>
   );
 }

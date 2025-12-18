@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import NavBar from '../components/NavBar';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
@@ -164,6 +165,8 @@ export default function AdminUsers() {
   if (!currentUser || currentUser.role !== 'admin') return null;
 
   return (
+    <>
+    <NavBar />
     <div style={{ padding: '24px 40px', maxWidth: '1000px', margin: '0 auto', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
       <h1 style={{ fontSize: '28px', marginBottom: '8px', color: '#333' }}>
         Admin Panel — Manage Users
@@ -372,5 +375,6 @@ export default function AdminUsers() {
         </div>
       )}
     </div>
+    </>
   );
 }
